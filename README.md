@@ -1,9 +1,8 @@
-rbfx-tasks
+rbfx-newton
 ==========
 
-A sample demonstrating how coroutines can be used for implementing simulation logic.
+Newton-Dynamics Integration for rbfx(Urho3D)
 
 ## Dependencies
-
 - rbfx (https://github.com/rokups/rbfx)
-- sc (https://github.com/rhoot/sc)
+- newton-dynamics (https://github.com/MADEAPPS/newton-dynamics/)
