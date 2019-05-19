@@ -43,19 +43,19 @@
 #include "UrhoNewtonApi.h"
 #include "NewtonPhysicsWorld.h"
 #include "NewtonCollisionShape.h"
-#include "CollisionShapesDerived.h"
+#include "NewtonCollisionShapesDerived.h"
 #include "NewtonRigidBody.h"
 #include "UrhoNewtonConversions.h"
 #include "NewtonConstraint.h"
 #include "NewtonFixedDistanceConstraint.h"
-#include "PhysicsEvents.h"
-#include "BallAndSocketConstraint.h"
+#include "NewtonPhysicsEvents.h"
+#include "NewtonBallAndSocketConstraint.h"
 #include "NewtonKinematicsJoint.h"
 #include "NewtonDebugDrawing.h"
 #include "NewtonFullyFixedConstraint.h"
 #include "NewtonHingeConstraint.h"
 #include "NewtonSliderConstraint.h"
-#include "6DOFConstraint.h"
+#include "Newton6DOFConstraint.h"
 
 
 
@@ -988,7 +988,7 @@ namespace Urho3D {
         NewtonMeshObject::RegisterObject(context);
         NewtonConstraint::RegisterObject(context);
         NewtonFixedDistanceConstraint::RegisterObject(context);
-        BallAndSocketConstraint::RegisterObject(context);
+        NewtonBallAndSocketConstraint::RegisterObject(context);
         NewtonSixDofConstraint::RegisterObject(context);
         NewtonHingeConstraint::RegisterObject(context);
         NewtonSliderConstraint::RegisterObject(context);

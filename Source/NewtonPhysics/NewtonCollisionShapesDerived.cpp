@@ -1,4 +1,4 @@
-#include "CollisionShapesDerived.h"
+#include "NewtonCollisionShapesDerived.h"
 #include "NewtonPhysicsWorld.h"
 #include "NewtonRigidBody.h"
 #include "NewtonMeshObject.h"

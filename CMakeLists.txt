@@ -24,7 +24,7 @@
 cmake_minimum_required (VERSION 3.4.3)
 
 # Set project name
-project (NewtonPhysics)
+project (rbfx-newton)
 
 # Dependencies
 add_subdirectory(ThirdParty/newton-dynamics)
@@ -35,40 +35,57 @@ file(GLOB all_SRCS
         "${PROJECT_SOURCE_DIR}/Source/NewtonPhysics/*.cpp"
         )
 
-add_library(NewtonPhysics SHARED ${all_SRCS})
-target_compile_definitions(NewtonPhysics PRIVATE URHONEWTON_EXPORTS)
-target_include_directories(NewtonPhysics PUBLIC 
+add_library(rbfx-newton SHARED ${all_SRCS})
+target_compile_definitions(rbfx-newton PRIVATE URHONEWTON_EXPORTS)
+target_include_directories(rbfx-newton PUBLIC 
 Source/NewtonPhysics
 )
 
 
 
-target_link_libraries(NewtonPhysics PUBLIC 
-
+target_link_libraries(rbfx-newton PUBLIC 
     dAnimation
     dContainers
     dCustomJoints
     dgCore
-    dgNewtonAvx
-    dgNewtonAvx2
-    dgNewtonSse4.2
-    #dgNewtonSse
     dgPhysics
     dNewton
     dMath
     newton
-
 )
+
+#newton plugins
+if(NEWTON_WITH_AVX_PLUGIN)
+	target_link_libraries(rbfx-newton PUBLIC 
+	    dgNewtonAvx
+	)
+endif()
+if(NEWTON_WITH_AVX2_PLUGIN)
+	target_link_libraries(rbfx-newton PUBLIC 
+	    dgNewtonAvx2
+	)
+endif()
+if(NEWTON_WITH_SSE4_PLUGIN)
+	target_link_libraries(rbfx-newton PUBLIC 
+	    dgNewtonSse4
+	)
+endif()
+
+
+
+
+
+
 
 
 include(CheckIncludeFile)
 check_include_file("valgrind/valgrind.h" HAVE_VALGRIND)
 if (HAVE_VALGRIND)
-    target_compile_definitions(NewtonPhysics PRIVATE -DHAVE_VALGRIND=${HAVE_VALGRIND})
+    target_compile_definitions(rbfx-newton PRIVATE -DHAVE_VALGRIND=${HAVE_VALGRIND})
 endif ()
 
 
-target_link_libraries(NewtonPhysics PUBLIC Urho3D)
+target_link_libraries(rbfx-newton PUBLIC Urho3D)
 
 
 

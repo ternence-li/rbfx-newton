@@ -1,7 +1,7 @@
-#include "6DOFConstraint.h"
+#include "Newton6DOFConstraint.h"
 #include "NewtonPhysicsWorld.h"
 #include "UrhoNewtonConversions.h"
-#include "dCustom6dof.h"
+#include "dCustomSixdof.h"
 
 #include "Urho3D/Core/Context.h"
 
@@ -36,7 +36,7 @@ namespace Urho3D {
             pitchLimits_.y_ = maxLimit;
             if (newtonJoint_)
             {
-                static_cast<dCustom6dof*>(newtonJoint_)->SetPitchLimits(pitchLimits_.x_, pitchLimits_.y_);
+                static_cast<dCustomSixdof*>(newtonJoint_)->SetPitchLimits(pitchLimits_.x_, pitchLimits_.y_);
             }
             else
                 MarkDirty();
@@ -55,7 +55,7 @@ namespace Urho3D {
             yawLimits_.y_ = maxLimit;
             if (newtonJoint_)
             {
-                static_cast<dCustom6dof*>(newtonJoint_)->SetYawLimits(yawLimits_.x_, yawLimits_.y_);
+                static_cast<dCustomSixdof*>(newtonJoint_)->SetYawLimits(yawLimits_.x_, yawLimits_.y_);
             }
             else
                 MarkDirty();
@@ -74,7 +74,7 @@ namespace Urho3D {
             rollLimits_.y_ = maxLimit;
             if (newtonJoint_)
             {
-                static_cast<dCustom6dof*>(newtonJoint_)->SetRollLimits(rollLimits_.x_, rollLimits_.y_);
+                static_cast<dCustomSixdof*>(newtonJoint_)->SetRollLimits(rollLimits_.x_, rollLimits_.y_);
             }
             else
                 MarkDirty();
@@ -93,7 +93,7 @@ namespace Urho3D {
 
     void NewtonSixDofConstraint::buildConstraint()
     {
-        newtonJoint_ = new dCustom6dof(UrhoToNewton(GetOwnNewtonBuildWorldFrame()), UrhoToNewton(GetOtherNewtonBuildWorldFrame()), GetOwnNewtonBody(), GetOtherNewtonBody());
+        newtonJoint_ = new dCustomSixdof(UrhoToNewton(GetOwnNewtonBuildWorldFrame()), UrhoToNewton(GetOtherNewtonBuildWorldFrame()), GetOwnNewtonBody(), GetOtherNewtonBody());
 
 
 
@@ -105,10 +105,10 @@ namespace Urho3D {
         if (!NewtonConstraint::applyAllJointParams())
             return false;
 
-        static_cast<dCustom6dof*>(newtonJoint_)->SetLinearLimits(dVector(M_LARGE_VALUE, M_LARGE_VALUE, M_LARGE_VALUE)*-1.0f, dVector(M_LARGE_VALUE, M_LARGE_VALUE, M_LARGE_VALUE));
-        static_cast<dCustom6dof*>(newtonJoint_)->SetPitchLimits(pitchLimits_.x_ * dDegreeToRad, pitchLimits_.y_* dDegreeToRad);
-        static_cast<dCustom6dof*>(newtonJoint_)->SetYawLimits(yawLimits_.x_* dDegreeToRad, yawLimits_.y_* dDegreeToRad);
-        static_cast<dCustom6dof*>(newtonJoint_)->SetRollLimits(rollLimits_.x_* dDegreeToRad, rollLimits_.y_* dDegreeToRad);
+        static_cast<dCustomSixdof*>(newtonJoint_)->SetLinearLimits(dVector(M_LARGE_VALUE, M_LARGE_VALUE, M_LARGE_VALUE)*-1.0f, dVector(M_LARGE_VALUE, M_LARGE_VALUE, M_LARGE_VALUE));
+        static_cast<dCustomSixdof*>(newtonJoint_)->SetPitchLimits(pitchLimits_.x_ * dDegreeToRad, pitchLimits_.y_* dDegreeToRad);
+        static_cast<dCustomSixdof*>(newtonJoint_)->SetYawLimits(yawLimits_.x_* dDegreeToRad, yawLimits_.y_* dDegreeToRad);
+        static_cast<dCustomSixdof*>(newtonJoint_)->SetRollLimits(rollLimits_.x_* dDegreeToRad, rollLimits_.y_* dDegreeToRad);
 
         return true;
     }

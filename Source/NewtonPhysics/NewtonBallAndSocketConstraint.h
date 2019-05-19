@@ -9,14 +9,14 @@ namespace Urho3D {
 
     
 
-    class URHONEWTON_API BallAndSocketConstraint : public NewtonConstraint
+    class URHONEWTON_API NewtonBallAndSocketConstraint : public NewtonConstraint
     {
-        URHO3D_OBJECT(BallAndSocketConstraint, NewtonConstraint);
+        URHO3D_OBJECT(NewtonBallAndSocketConstraint, NewtonConstraint);
 
     public:
 
-        BallAndSocketConstraint(Context* context);
-        ~BallAndSocketConstraint();
+        NewtonBallAndSocketConstraint(Context* context);
+        ~NewtonBallAndSocketConstraint();
 
         static void RegisterObject(Context* context);
 

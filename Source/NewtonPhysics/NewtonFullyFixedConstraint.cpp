@@ -11,6 +11,7 @@
 #include "Newton.h"
 #include "dMatrix.h"
 #include "dCustomFixDistance.h"
+#include "dCustomSixdof.h"
 
 
 
@@ -43,7 +44,7 @@ namespace Urho3D {
         //GetSubsystem<VisualDebugger>()->AddFrame(ownFrame, 1.0f, false)->SetLifeTimeMs(100000);
         //GetSubsystem<VisualDebugger>()->AddFrame(otherFrame, 1.0f, false)->SetLifeTimeMs(100000);
 
-        newtonJoint_ = new dCustom6dof(UrhoToNewton(ownFrame), UrhoToNewton(otherFrame), GetOwnNewtonBody(), GetOtherNewtonBody());
+        newtonJoint_ = new dCustomSixdof(UrhoToNewton(ownFrame), UrhoToNewton(otherFrame), GetOwnNewtonBody(), GetOtherNewtonBody());
 
     }
 

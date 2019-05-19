@@ -1,5 +1,5 @@
 #include "NewtonPhysicsWorld.h"
-#include "BallAndSocketConstraint.h"
+#include "NewtonBallAndSocketConstraint.h"
 #include "UrhoNewtonConversions.h"
 #include "NewtonRigidBody.h"
 #include "NewtonDebugDrawing.h"
@@ -15,18 +15,18 @@
 #include "dMatrix.h"
 #include "dCustomBallAndSocket.h"
 #include "dCustomJoint.h"
-#include "dCustom6dof.h"
+#include "dCustomSixdof.h"
 
 
 
 namespace Urho3D {
 
-    BallAndSocketConstraint::BallAndSocketConstraint(Context* context) : NewtonConstraint(context)
+    NewtonBallAndSocketConstraint::NewtonBallAndSocketConstraint(Context* context) : NewtonConstraint(context)
     {
 
     }
 
-    void BallAndSocketConstraint::SetConeAngle(float angle)
+    void NewtonBallAndSocketConstraint::SetConeAngle(float angle)
     {
         if (coneAngle_ != angle) {
             coneAngle_ = angle;
@@ -39,12 +39,12 @@ namespace Urho3D {
         }
     }
 
-    float BallAndSocketConstraint::GetConeAngle() const
+    float NewtonBallAndSocketConstraint::GetConeAngle() const
     {
         return coneAngle_;
     }
 
-    void BallAndSocketConstraint::SetTwistLimits(float minAngle, float maxAngle)
+    void NewtonBallAndSocketConstraint::SetTwistLimits(float minAngle, float maxAngle)
     {
         if (twistMaxAngle_ != maxAngle || twistMinAngle_ != minAngle) {
             twistMinAngle_ = minAngle;
@@ -58,7 +58,7 @@ namespace Urho3D {
         }
     }
 
-    void BallAndSocketConstraint::SetTwistLimitMin(float minAngle)
+    void NewtonBallAndSocketConstraint::SetTwistLimitMin(float minAngle)
     {
         if (twistMinAngle_ != minAngle) {
             twistMinAngle_ = minAngle;
@@ -71,7 +71,7 @@ namespace Urho3D {
         }
     }
 
-    void BallAndSocketConstraint::SetTwistLimitMax(float maxAngle)
+    void NewtonBallAndSocketConstraint::SetTwistLimitMax(float maxAngle)
     {
         if (twistMaxAngle_ != maxAngle) {
             twistMaxAngle_ = maxAngle;
@@ -84,22 +84,22 @@ namespace Urho3D {
         }
     }
 
-    float BallAndSocketConstraint::GetTwistLimitMin() const
+    float NewtonBallAndSocketConstraint::GetTwistLimitMin() const
     {
         return twistMinAngle_;
     }
 
-    float BallAndSocketConstraint::GetTwistLimitMax() const
+    float NewtonBallAndSocketConstraint::GetTwistLimitMax() const
     {
         return twistMaxAngle_;
     }
 
-    Urho3D::Vector2 BallAndSocketConstraint::GetTwistLimits() const
+    Urho3D::Vector2 NewtonBallAndSocketConstraint::GetTwistLimits() const
     {
         return Vector2(twistMinAngle_, twistMaxAngle_);
     }
 
-    void BallAndSocketConstraint::SetConeEnabled(bool enabled /*= true*/)
+    void NewtonBallAndSocketConstraint::SetConeEnabled(bool enabled /*= true*/)
     {
         if (coneEnabled_ != enabled) {
             coneEnabled_ = enabled;
@@ -112,12 +112,12 @@ namespace Urho3D {
         }
     }
 
-    bool BallAndSocketConstraint::GetConeEnabled() const
+    bool NewtonBallAndSocketConstraint::GetConeEnabled() const
     {
         return coneEnabled_;
     }
 
-    void BallAndSocketConstraint::SetTwistLimitsEnabled(bool enabled /*= false*/)
+    void NewtonBallAndSocketConstraint::SetTwistLimitsEnabled(bool enabled /*= false*/)
     {
         if (twistLimitsEnabled_ != enabled) {
             twistLimitsEnabled_ = enabled;
@@ -130,12 +130,12 @@ namespace Urho3D {
         }
     }
 
-    bool BallAndSocketConstraint::GetTwistLimitsEnabled() const
+    bool NewtonBallAndSocketConstraint::GetTwistLimitsEnabled() const
     {
         return twistLimitsEnabled_;
     }
 
-    void BallAndSocketConstraint::SetConeFriction(float frictionTorque)
+    void NewtonBallAndSocketConstraint::SetConeFriction(float frictionTorque)
     {
         if (frictionTorque != coneFriction_) {
             coneFriction_ = frictionTorque;
@@ -148,12 +148,12 @@ namespace Urho3D {
         }
     }
 
-    float BallAndSocketConstraint::GetConeFriction() const
+    float NewtonBallAndSocketConstraint::GetConeFriction() const
     {
         return coneFriction_;
     }
 
-    void BallAndSocketConstraint::SetTwistFriction(float frictionTorque)
+    void NewtonBallAndSocketConstraint::SetTwistFriction(float frictionTorque)
     {
         if (twistFriction_ != frictionTorque) {
             twistFriction_ = frictionTorque;
@@ -166,26 +166,26 @@ namespace Urho3D {
         }
     }
 
-    float BallAndSocketConstraint::GetTwistFriction() const
+    float NewtonBallAndSocketConstraint::GetTwistFriction() const
     {
         return twistFriction_;
     }
 
-    void BallAndSocketConstraint::DrawDebugGeometry(DebugRenderer* debug, bool depthTest)
+    void NewtonBallAndSocketConstraint::DrawDebugGeometry(DebugRenderer* debug, bool depthTest)
     {
         NewtonConstraint::DrawDebugGeometry(debug, depthTest);
     }
 
 
 
-    Urho3D::BallAndSocketConstraint::~BallAndSocketConstraint()
+    Urho3D::NewtonBallAndSocketConstraint::~NewtonBallAndSocketConstraint()
     {
 
     }
 
-    void Urho3D::BallAndSocketConstraint::RegisterObject(Context* context)
+    void Urho3D::NewtonBallAndSocketConstraint::RegisterObject(Context* context)
     {
-        context->RegisterFactory<BallAndSocketConstraint>(DEF_PHYSICS_CATEGORY.c_str());
+        context->RegisterFactory<NewtonBallAndSocketConstraint>(DEF_PHYSICS_CATEGORY.c_str());
 
 
         URHO3D_COPY_BASE_ATTRIBUTES(NewtonConstraint);
@@ -200,14 +200,14 @@ namespace Urho3D {
 
     }
 
-    void Urho3D::BallAndSocketConstraint::buildConstraint()
+    void Urho3D::NewtonBallAndSocketConstraint::buildConstraint()
     {
         // Create a dCustomBallAndSocket
         newtonJoint_ = new dCustomBallAndSocket(UrhoToNewton(GetOwnNewtonBuildWorldFrame()), UrhoToNewton(GetOtherNewtonBuildWorldFrame()), GetOwnNewtonBody(), GetOtherNewtonBody());
 
         
     }
-    bool BallAndSocketConstraint::applyAllJointParams()
+    bool NewtonBallAndSocketConstraint::applyAllJointParams()
     {
         if (!NewtonConstraint::applyAllJointParams())
             return false;
