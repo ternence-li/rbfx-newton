@@ -83,7 +83,7 @@ namespace Urho3D {
         contactEntryPool_.clear();
         for (int i = 0; i < contactEntryPoolSize_; i++)
         {
-            contactEntryPool_.insert(contactEntryPool_.begin(), context->CreateObject<RigidBodyContactEntry>());
+            contactEntryPool_.insert(contactEntryPool_.begin(), context->CreateObject<NewtonRigidBodyContactEntry>());
         }
 
         //set timestep target to max fps
@@ -218,11 +218,11 @@ namespace Urho3D {
         }
     }
 
-    Urho3D::RigidBodyContactEntry* NewtonPhysicsWorld::GetCreateContactEntry(NewtonRigidBody* body0, NewtonRigidBody* body1)
+    Urho3D::NewtonRigidBodyContactEntry* NewtonPhysicsWorld::GetCreateContactEntry(NewtonRigidBody* body0, NewtonRigidBody* body1)
     {
         IntVector2 key(body0->GetID(), body1->GetID());
         //look through existing
-        RigidBodyContactEntry* entry = contactEntries_[key.ToHash()];
+        NewtonRigidBodyContactEntry* entry = contactEntries_[key.ToHash()];
 
         if (!entry)
         {
@@ -241,7 +241,7 @@ namespace Urho3D {
                     //grow the pool
                     int prevSize = contactEntryPool_.size();
                     for (int i = 0; i < contactEntryPoolSize_; i++) {
-                        contactEntryPool_.insert(contactEntryPool_.size(), context_->CreateObject<RigidBodyContactEntry>());
+                        contactEntryPool_.insert(contactEntryPool_.size(), context_->CreateObject<NewtonRigidBodyContactEntry>());
                     }
 
                     URHO3D_LOGINFO("PhysicsWorld Contact Entry Pool Grow To: " + eastl::to_string(contactEntryPool_.size()));
@@ -441,20 +441,20 @@ namespace Urho3D {
     {
         eastl::vector<unsigned int> removeKeys;
         VariantMap eventData;
-        eventData[PhysicsCollisionStart::P_WORLD] = this;
+        eventData[NewtonPhysicsCollisionStart::P_WORLD] = this;
 
 
-        for (eastl::hash_map<unsigned int, RigidBodyContactEntry*>::iterator i = contactEntries_.begin(); i != contactEntries_.end(); i++)
+        for (eastl::hash_map<unsigned int, NewtonRigidBodyContactEntry*>::iterator i = contactEntries_.begin(); i != contactEntries_.end(); i++)
         {
-            RigidBodyContactEntry* entry = i->second;
+            NewtonRigidBodyContactEntry* entry = i->second;
 
             if (entry->expired_)
                 continue;
 
-            eventData[PhysicsCollisionStart::P_BODYA] = entry->body0;
-            eventData[PhysicsCollisionStart::P_BODYB] = entry->body1;
+            eventData[NewtonPhysicsCollisionStart::P_BODYA] = entry->body0;
+            eventData[NewtonPhysicsCollisionStart::P_BODYB] = entry->body1;
 
-            eventData[PhysicsCollisionStart::P_CONTACT_DATA] = entry;
+            eventData[NewtonPhysicsCollisionStart::P_CONTACT_DATA] = entry;
 
             if (entry->body0.expired() || entry->body1.expired())//check expired
             {
@@ -463,50 +463,50 @@ namespace Urho3D {
             else if (entry->wakeFlag_ && !entry->wakeFlagPrev_)//begin contact
             {
                 if (entry->body0->collisionEventMode_ &&entry->body1->collisionEventMode_) {
-                    SendEvent(E_PHYSICSCOLLISIONSTART, eventData);
+                    SendEvent(E_NEWTON_PHYSICSCOLLISIONSTART, eventData);
                 }
 
                 if (entry->body0->collisionEventMode_) {
                     if (entry->body0.expired() || entry->body1.expired()) break; //it is possible someone deleted a body in the previous event.
 
-                    eventData[NodeCollisionStart::P_OTHERNODE] = entry->body1->GetNode();
-                    eventData[NodeCollisionStart::P_OTHERBODY] = entry->body1;
-                    entry->body0->GetNode()->SendEvent(E_NODECOLLISIONSTART, eventData);
+                    eventData[NewtonNodeCollisionStart::P_OTHERNODE] = entry->body1->GetNode();
+                    eventData[NewtonNodeCollisionStart::P_OTHERBODY] = entry->body1;
+                    entry->body0->GetNode()->SendEvent(E_NEWTON_NODECOLLISIONSTART, eventData);
                 }
 
 
                 if (entry->body1->collisionEventMode_) {
                     if (entry->body0.expired() || entry->body1.expired()) break;
 
-                    eventData[NodeCollisionStart::P_OTHERNODE] = entry->body0->GetNode();
-                    eventData[NodeCollisionStart::P_OTHERBODY] = entry->body0;
-                    entry->body1->GetNode()->SendEvent(E_NODECOLLISIONSTART, eventData);
+                    eventData[NewtonNodeCollisionStart::P_OTHERNODE] = entry->body0->GetNode();
+                    eventData[NewtonNodeCollisionStart::P_OTHERBODY] = entry->body0;
+                    entry->body1->GetNode()->SendEvent(E_NEWTON_NODECOLLISIONSTART, eventData);
                 }
 
 
                 if (entry->body0->collisionEventMode_ &&entry->body1->collisionEventMode_) {
                     if (entry->body0.expired() || entry->body1.expired()) break;
 
-                    //also send the E_NODECOLLISION event
-                    SendEvent(E_PHYSICSCOLLISION, eventData);
+                    //also send the E_NEWTON_NODECOLLISION event
+                    SendEvent(E_NEWTON_PHYSICSCOLLISION, eventData);
                 }
 
                 if (entry->body0->collisionEventMode_) {
 
                     if (entry->body0.expired() || entry->body1.expired()) break;
 
-                    eventData[NodeCollisionStart::P_OTHERNODE] = entry->body1->GetNode();
-                    eventData[NodeCollisionStart::P_OTHERBODY] = entry->body1;
-                    entry->body0->GetNode()->SendEvent(E_NODECOLLISION, eventData);
+                    eventData[NewtonNodeCollisionStart::P_OTHERNODE] = entry->body1->GetNode();
+                    eventData[NewtonNodeCollisionStart::P_OTHERBODY] = entry->body1;
+                    entry->body0->GetNode()->SendEvent(E_NEWTON_NODECOLLISION, eventData);
                 }
 
 
                 if (entry->body1->collisionEventMode_) {
                     if (entry->body0.expired() || entry->body1.expired()) break;
 
-                    eventData[NodeCollisionStart::P_OTHERNODE] = entry->body0->GetNode();
-                    eventData[NodeCollisionStart::P_OTHERBODY] = entry->body0;
-                    entry->body1->GetNode()->SendEvent(E_NODECOLLISION, eventData);
+                    eventData[NewtonNodeCollisionStart::P_OTHERNODE] = entry->body0->GetNode();
+                    eventData[NewtonNodeCollisionStart::P_OTHERBODY] = entry->body0;
+                    entry->body1->GetNode()->SendEvent(E_NEWTON_NODECOLLISION, eventData);
                 }
 
 
@@ -514,46 +514,46 @@ namespace Urho3D {
             else if (!entry->wakeFlag_ && entry->wakeFlagPrev_)//end contact
             {
                 if (entry->body0->collisionEventMode_ && entry->body1->collisionEventMode_) {
-                    SendEvent(E_PHYSICSCOLLISIONEND, eventData);
+                    SendEvent(E_NEWTON_PHYSICSCOLLISIONEND, eventData);
                 }
 
                 if (entry->body0->collisionEventMode_) {
 
                     if (entry->body0.expired() || entry->body1.expired()) break;
-                    eventData[NodeCollisionStart::P_OTHERNODE] = entry->body1->GetNode();
-                    eventData[NodeCollisionStart::P_OTHERBODY] = entry->body1;
-                    entry->body0->GetNode()->SendEvent(E_NODECOLLISIONEND, eventData);
+                    eventData[NewtonNodeCollisionStart::P_OTHERNODE] = entry->body1->GetNode();
+                    eventData[NewtonNodeCollisionStart::P_OTHERBODY] = entry->body1;
+                    entry->body0->GetNode()->SendEvent(E_NEWTON_NODECOLLISIONEND, eventData);
                 }
 
                 if (entry->body1->collisionEventMode_) {
                     if (entry->body0.expired() || entry->body1.expired()) break;
-                    eventData[NodeCollisionStart::P_OTHERNODE] = entry->body0->GetNode();
-                    eventData[NodeCollisionStart::P_OTHERBODY] = entry->body0;
-                    entry->body1->GetNode()->SendEvent(E_NODECOLLISIONEND, eventData);
+                    eventData[NewtonNodeCollisionStart::P_OTHERNODE] = entry->body0->GetNode();
+                    eventData[NewtonNodeCollisionStart::P_OTHERBODY] = entry->body0;
+                    entry->body1->GetNode()->SendEvent(E_NEWTON_NODECOLLISIONEND, eventData);
                 }
             }
             else if (entry->wakeFlag_ && entry->wakeFlagPrev_)//continued contact
             {
                 if (entry->body0->collisionEventMode_ == NewtonRigidBody::COLLISION_ALL || entry->body1->collisionEventMode_ == NewtonRigidBody::COLLISION_ALL) {
-                    SendEvent(E_PHYSICSCOLLISION, eventData);
+                    SendEvent(E_NEWTON_PHYSICSCOLLISION, eventData);
                 }
 
 
                 if (entry->body0->collisionEventMode_ == NewtonRigidBody::COLLISION_ALL) {
                     if (entry->body0.expired() || entry->body1.expired()) break;
 
-                    eventData[NodeCollisionStart::P_OTHERNODE] = entry->body1->GetNode();
-                    eventData[NodeCollisionStart::P_OTHERBODY] = entry->body1;
-                    entry->body0->GetNode()->SendEvent(E_NODECOLLISION, eventData);
+                    eventData[NewtonNodeCollisionStart::P_OTHERNODE] = entry->body1->GetNode();
+                    eventData[NewtonNodeCollisionStart::P_OTHERBODY] = entry->body1;
+                    entry->body0->GetNode()->SendEvent(E_NEWTON_NODECOLLISION, eventData);
                 }
 
                 if (entry->body1->collisionEventMode_ == NewtonRigidBody::COLLISION_ALL) {
 
                     if (entry->body0.expired() || entry->body1.expired()) break;
 
-                    eventData[NodeCollisionStart::P_OTHERNODE] = entry->body0->GetNode();
-                    eventData[NodeCollisionStart::P_OTHERBODY] = entry->body0;
-                    entry->body1->GetNode()->SendEvent(E_NODECOLLISION, eventData);
+                    eventData[NewtonNodeCollisionStart::P_OTHERNODE] = entry->body0->GetNode();
+                    eventData[NewtonNodeCollisionStart::P_OTHERBODY] = entry->body0;
+                    entry->body1->GetNode()->SendEvent(E_NEWTON_NODECOLLISION, eventData);
                 }
             }
             else if (!entry->wakeFlag_ && !entry->wakeFlagPrev_)//no contact for one update. (mark for removal from the map)
@@ -612,9 +612,9 @@ namespace Urho3D {
             isUpdating_ = false;
             // Send post-step event
             VariantMap& eventData = GetEventDataMap();
-            eventData[PhysicsPostStep::P_WORLD] = this;
-            eventData[PhysicsPostStep::P_TIMESTEP] = physicsTimeStep;
-            SendEvent(E_PHYSICSPOSTSTEP, eventData);
+            eventData[NewtonPhysicsPostStep::P_WORLD] = this;
+            eventData[NewtonPhysicsPostStep::P_TIMESTEP] = physicsTimeStep;
+            SendEvent(E_NEWTON_PHYSICSPOSTSTEP, eventData);
 
         }
         
@@ -707,9 +707,9 @@ namespace Urho3D {
         {
             // Send pre-step event
             VariantMap& eventData = GetEventDataMap();
-            eventData[PhysicsPreStep::P_WORLD] = this;
-            eventData[PhysicsPreStep::P_TIMESTEP] = physicsTimeStep;
-            SendEvent(E_PHYSICSPRESTEP, eventData);
+            eventData[NewtonPhysicsPreStep::P_WORLD] = this;
+            eventData[NewtonPhysicsPreStep::P_TIMESTEP] = physicsTimeStep;
+            SendEvent(E_NEWTON_PHYSICSPRESTEP, eventData);
 
 
             //use target time step to give newton constant time steps. 
@@ -993,8 +993,8 @@ namespace Urho3D {
         NewtonHingeConstraint::RegisterObject(context);
         NewtonSliderConstraint::RegisterObject(context);
         NewtonFullyFixedConstraint::RegisterObject(context);
-        KinematicsControllerConstraint::RegisterObject(context);
-        RigidBodyContactEntry::RegisterObject(context);
+        NewtonKinematicsControllerConstraint::RegisterObject(context);
+        NewtonRigidBodyContactEntry::RegisterObject(context);
 
     }
 
@@ -1009,22 +1009,22 @@ namespace Urho3D {
 
 
 
-    RigidBodyContactEntry::RigidBodyContactEntry(Context* context) : Object(context)
+    NewtonRigidBodyContactEntry::NewtonRigidBodyContactEntry(Context* context) : Object(context)
     {
 
     }
 
-    RigidBodyContactEntry::~RigidBodyContactEntry()
+    NewtonRigidBodyContactEntry::~NewtonRigidBodyContactEntry()
     {
 
     }
 
-    void RigidBodyContactEntry::RegisterObject(Context* context)
+    void NewtonRigidBodyContactEntry::RegisterObject(Context* context)
     {
-        context->RegisterFactory<RigidBodyContactEntry>();
+        context->RegisterFactory<NewtonRigidBodyContactEntry>();
     }
 
-    void RigidBodyContactEntry::DrawDebugGeometry(DebugRenderer* debug, bool depthTest)
+    void NewtonRigidBodyContactEntry::DrawDebugGeometry(DebugRenderer* debug, bool depthTest)
     {
         //draw contact points
         if (!expired_)

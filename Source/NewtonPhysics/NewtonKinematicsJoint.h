@@ -8,14 +8,14 @@ namespace Urho3D {
     class Context;
 
     ///Contraint for moving rigid bodies to a target position and orientation.
-    class URHONEWTON_API KinematicsControllerConstraint : public NewtonConstraint
+    class URHONEWTON_API NewtonKinematicsControllerConstraint : public NewtonConstraint
     {
-        URHO3D_OBJECT(KinematicsControllerConstraint, NewtonConstraint);
+        URHO3D_OBJECT(NewtonKinematicsControllerConstraint, NewtonConstraint);
 
     public:
 
-        KinematicsControllerConstraint(Context* context);
-        ~KinematicsControllerConstraint();
+        NewtonKinematicsControllerConstraint(Context* context);
+        ~NewtonKinematicsControllerConstraint();
 
         static void RegisterObject(Context* context);
 

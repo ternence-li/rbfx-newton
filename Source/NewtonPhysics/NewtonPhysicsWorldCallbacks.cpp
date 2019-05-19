@@ -110,7 +110,7 @@ namespace Urho3D {
     {
         if (NewtonJointGetUserData(contact)) {
             //URHO3D_LOGINFO("Contact Joint Destructor");
-            static_cast<RigidBodyContactEntry*>(NewtonJointGetUserData(contact))->newtonJoint_ = nullptr;
+            static_cast<NewtonRigidBodyContactEntry*>(NewtonJointGetUserData(contact))->newtonJoint_ = nullptr;
         }
 
     }
@@ -143,7 +143,7 @@ namespace Urho3D {
         
 
         // Get a handle to a contact entry.
-        RigidBodyContactEntry* contactEntry = nullptr;
+        NewtonRigidBodyContactEntry* contactEntry = nullptr;
         NewtonPhysicsWorld* physicsWorld = rigBody0->GetPhysicsWorld();
         NewtonWorldCriticalSectionLock(physicsWorld->GetNewtonWorld(), threadIndex);
             contactEntry = physicsWorld->GetCreateContactEntry(rigBody0, rigBody1);

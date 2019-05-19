@@ -50,15 +50,15 @@ namespace Urho3D
     static const int DEF_PHYSICS_MAX_CONTACT_POINTS = 512;//maximum number of contacts per contact entry.
 
 
-    class URHONEWTON_API  RigidBodyContactEntry : public Object
+    class URHONEWTON_API  NewtonRigidBodyContactEntry : public Object
     {
-        URHO3D_OBJECT(RigidBodyContactEntry, Object);
+        URHO3D_OBJECT(NewtonRigidBodyContactEntry, Object);
     public:
 
         friend class NewtonPhysicsWorld;
 
-        RigidBodyContactEntry(Context* context);
-        virtual ~RigidBodyContactEntry() override;
+        NewtonRigidBodyContactEntry(Context* context);
+        virtual ~NewtonRigidBodyContactEntry() override;
 
         /// Register object factory.
         static void RegisterObject(Context* context);
@@ -212,10 +212,10 @@ namespace Urho3D
         void DrawDebugGeometry(DebugRenderer* debug, bool drawConstraints, bool drawContacts, bool drawRigidBodies, bool depthTest);
 
 
-        RigidBodyContactEntry* GetCreateContactEntry(NewtonRigidBody* body0, NewtonRigidBody* body1);
+        NewtonRigidBodyContactEntry* GetCreateContactEntry(NewtonRigidBody* body0, NewtonRigidBody* body1);
 
 
-        eastl::hash_map<unsigned int, RigidBodyContactEntry*> contactEntries_;
+        eastl::hash_map<unsigned int, NewtonRigidBodyContactEntry*> contactEntries_;
 
         void CleanContactEntries();
 
@@ -274,7 +274,7 @@ namespace Urho3D
 
 
 
-        eastl::vector<eastl::shared_ptr<RigidBodyContactEntry>> contactEntryPool_;
+        eastl::vector<eastl::shared_ptr<NewtonRigidBodyContactEntry>> contactEntryPool_;
         int contactEntryPoolCurIdx_ = 0;
         const int contactEntryPoolSize_ = 100;
 

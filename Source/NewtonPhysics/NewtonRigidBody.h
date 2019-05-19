@@ -40,7 +40,7 @@ namespace Urho3D
     class Component;
     class NewtonPhysicsWorld;
     class NewtonCollisionShape;
-    class RigidBodyContactEntry;
+    class NewtonRigidBodyContactEntry;
 
 
     static const char* RigidBodyCollisionEventModeNames[] =
