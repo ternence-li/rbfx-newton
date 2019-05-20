@@ -343,7 +343,7 @@ namespace Urho3D
         /// compound collision if needed.
         NewtonCollision* effectiveCollision_ = nullptr;
         /// Physics world.
-		ea::weak_ptr<NewtonPhysicsWorld> physicsWorld_;
+		WeakPtr<NewtonPhysicsWorld> physicsWorld_;
         /// all currently used collision shape components.
 		ea::vector<NewtonCollisionShape*> collisionShapes_;
 
@@ -490,7 +490,7 @@ namespace Urho3D
     };
 
 
-	inline bool RigidBodySceneDepthCompare(const ea::weak_ptr<NewtonRigidBody>& body1, const ea::weak_ptr<NewtonRigidBody>& body2) {
+	inline bool RigidBodySceneDepthCompare(const WeakPtr<NewtonRigidBody>& body1, const WeakPtr<NewtonRigidBody>& body2) {
         return (body1->GetSceneDepth() < body2->GetSceneDepth());
     }
 

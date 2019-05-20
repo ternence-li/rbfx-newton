@@ -1003,7 +1003,7 @@ namespace Urho3D {
         {
 
             //Auto-create a physics world on the scene if it does not yet exist.
-			physicsWorld_ = ea::weak_ptr<NewtonPhysicsWorld>(GetScene()->GetOrCreateComponent<NewtonPhysicsWorld>());
+			physicsWorld_ = WeakPtr<NewtonPhysicsWorld>(GetScene()->GetOrCreateComponent<NewtonPhysicsWorld>());
 
             physicsWorld_->addRigidBody(this);
 

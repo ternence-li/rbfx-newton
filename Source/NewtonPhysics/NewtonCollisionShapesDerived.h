@@ -191,7 +191,7 @@ namespace Urho3D {
         static void RegisterObject(Context* context);
 
         /// Set model to create geometry from
-        void SetModel(ea::weak_ptr<Model> model) { model_ = model; MarkDirty(); }
+        void SetModel(WeakPtr<Model> model) { model_ = model; MarkDirty(); }
 
         Model* GetModel() const { return model_; }
 
@@ -209,7 +209,7 @@ namespace Urho3D {
 
     protected:
         /// optional Model reference
-        ea::weak_ptr<Model> model_;
+        WeakPtr<Model> model_;
         /// lod level
         unsigned modelLodLevel_ = 0;
         /// model geometry index to use

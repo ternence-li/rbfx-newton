@@ -351,7 +351,7 @@ namespace Urho3D {
         if (node)
         {
             ///auto create physics world
-			physicsWorld_ = ea::weak_ptr<NewtonPhysicsWorld>(GetScene()->GetOrCreateComponent<NewtonPhysicsWorld>());
+			physicsWorld_ = WeakPtr<NewtonPhysicsWorld>(GetScene()->GetOrCreateComponent<NewtonPhysicsWorld>());
 
 
             physicsWorld_->addCollisionShape(this);

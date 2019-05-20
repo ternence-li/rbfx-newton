@@ -128,7 +128,7 @@ namespace Urho3D {
     void NewtonCollisionShape_Geometry::SetModelByResourceRef(const ResourceRef& ref)
     {
         auto* cache = GetSubsystem<ResourceCache>();
-        SetModel(cache->GetResource<Model>(ref.name_));
+        SetModel(WeakPtr<Model>(cache->GetResource<Model>(ref.name_)));
     }
 
     bool NewtonCollisionShape_Geometry::resolveOrCreateTriangleMeshFromModel()
@@ -251,7 +251,7 @@ namespace Urho3D {
 
         if (stMdl)
         {
-            SetModel(stMdl->GetModel());
+            SetModel(WeakPtr<Model>( stMdl->GetModel() ));
         }
     }
 

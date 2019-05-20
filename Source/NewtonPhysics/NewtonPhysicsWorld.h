@@ -68,8 +68,8 @@ namespace Urho3D
         //flag indicating if the entry is in use or not. used for pooling.
         bool expired_ = true;
 
-		eastl::weak_ptr<NewtonRigidBody> body0;
-		eastl::weak_ptr<NewtonRigidBody> body1;
+		WeakPtr<NewtonRigidBody> body0;
+		WeakPtr<NewtonRigidBody> body1;
         NewtonCollisionShape* shapes0[DEF_PHYSICS_MAX_CONTACT_POINTS];
         NewtonCollisionShape* shapes1[DEF_PHYSICS_MAX_CONTACT_POINTS];
 
@@ -253,9 +253,9 @@ namespace Urho3D
         void markRigidBodiesNeedSorted() { rigidBodyListNeedsSorted = true; }
         bool rigidBodyListNeedsSorted = true;
 
-		eastl::vector<eastl::weak_ptr<NewtonCollisionShape>> collisionComponentList;
-		eastl::vector<eastl::weak_ptr<NewtonRigidBody>> rigidBodyComponentList;
-		eastl::vector<eastl::weak_ptr<NewtonConstraint>> constraintList;
+		eastl::vector<WeakPtr<NewtonCollisionShape>> collisionComponentList;
+		eastl::vector<WeakPtr<NewtonRigidBody>> rigidBodyComponentList;
+		eastl::vector<WeakPtr<NewtonConstraint>> constraintList;
 
 
         void freeWorld();
@@ -274,7 +274,7 @@ namespace Urho3D
 
 
 
-        eastl::vector<eastl::shared_ptr<NewtonRigidBodyContactEntry>> contactEntryPool_;
+        eastl::vector<SharedPtr<NewtonRigidBodyContactEntry>> contactEntryPool_;
         int contactEntryPoolCurIdx_ = 0;
         const int contactEntryPoolSize_ = 100;
 
@@ -308,7 +308,7 @@ namespace Urho3D
 		void GetBodiesInConvexCast(eastl::vector<NewtonRigidBody*>& result, int numContacts);
 
         ///newton mesh caching
-		eastl::hash_map <StringHash, eastl::shared_ptr<NewtonMeshObject >> newtonMeshCache_;
+		eastl::hash_map <StringHash, SharedPtr<NewtonMeshObject >> newtonMeshCache_;
 
         ///returns a unique key for looking up an exising NewtonMesh from the cache.
 		static StringHash NewtonMeshKey(eastl::string modelResourceName, int modelLodLevel, eastl::string otherData);

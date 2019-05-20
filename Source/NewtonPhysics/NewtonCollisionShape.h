@@ -144,13 +144,13 @@ namespace Urho3D
     protected:
 
         /// Physics world.
-        ea::weak_ptr<NewtonPhysicsWorld> physicsWorld_;
+        WeakPtr<NewtonPhysicsWorld> physicsWorld_;
 
         /// Internal Newton Collision
         NewtonCollision* newtonCollision_ = nullptr;
 
         /// newton Mesh reference
-		ea::weak_ptr<NewtonMeshObject> newtonMesh_;
+		WeakPtr<NewtonMeshObject> newtonMesh_;
 
 
         float staticFriction_ = COLLISION_SHAPE_DEF_STATIC_FRICTION;

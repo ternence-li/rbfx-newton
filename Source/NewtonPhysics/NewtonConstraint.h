@@ -184,12 +184,12 @@ namespace Urho3D {
 
     protected:
         /// Physics world.
-        eastl::weak_ptr<NewtonPhysicsWorld> physicsWorld_;
+        WeakPtr<NewtonPhysicsWorld> physicsWorld_;
         /// Own rigid body.
-		eastl::weak_ptr<NewtonRigidBody> ownBody_;
+		WeakPtr<NewtonRigidBody> ownBody_;
         unsigned ownBodyId_ = 0;
         /// Other rigid body.
-		eastl::weak_ptr<NewtonRigidBody> otherBody_;
+		WeakPtr<NewtonRigidBody> otherBody_;
         unsigned otherBodyId_ = 0;
         /// Internal newtonJoint.
         dCustomJoint* newtonJoint_ = nullptr;

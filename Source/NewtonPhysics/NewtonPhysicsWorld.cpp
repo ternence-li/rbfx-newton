@@ -320,28 +320,28 @@ namespace Urho3D {
 
     void NewtonPhysicsWorld::addCollisionShape(NewtonCollisionShape* collision)
     {
-		collisionComponentList.push_front(eastl::weak_ptr<NewtonCollisionShape>(collision));
+		collisionComponentList.push_front(WeakPtr<NewtonCollisionShape>(collision));
     }
 
     void NewtonPhysicsWorld::removeCollisionShape(NewtonCollisionShape* collision)
     {
-		collisionComponentList.erase(collisionComponentList.index_of(eastl::weak_ptr<NewtonCollisionShape>(collision)));
+		collisionComponentList.erase(collisionComponentList.index_of(WeakPtr<NewtonCollisionShape>(collision)));
     }
 
     void NewtonPhysicsWorld::addRigidBody(NewtonRigidBody* body)
     {
-		rigidBodyComponentList.push_front(eastl::weak_ptr<NewtonRigidBody>(body));
+		rigidBodyComponentList.push_front(WeakPtr<NewtonRigidBody>(body));
     }
 
     void NewtonPhysicsWorld::removeRigidBody(NewtonRigidBody* body)
     {
 
-		rigidBodyComponentList.erase(rigidBodyComponentList.index_of(eastl::weak_ptr<NewtonRigidBody>(body)));
+		rigidBodyComponentList.erase(rigidBodyComponentList.index_of(WeakPtr<NewtonRigidBody>(body)));
     }
 
     void NewtonPhysicsWorld::addConstraint(NewtonConstraint* constraint)
     {
-		constraintList.push_front(eastl::weak_ptr<NewtonConstraint>(constraint));
+		constraintList.push_front(WeakPtr<NewtonConstraint>(constraint));
 
 
 
@@ -349,7 +349,7 @@ namespace Urho3D {
 
     void NewtonPhysicsWorld::removeConstraint(NewtonConstraint* constraint)
     {
-		constraintList.erase(constraintList.index_of(eastl::weak_ptr<NewtonConstraint>(constraint)));
+		constraintList.erase(constraintList.index_of(WeakPtr<NewtonConstraint>(constraint)));
     }
 
 
@@ -456,7 +456,7 @@ namespace Urho3D {
 
             eventData[NewtonPhysicsCollisionStart::P_CONTACT_DATA] = entry;
 
-            if (entry->body0.expired() || entry->body1.expired())//check expired
+            if (entry->body0.Expired() || entry->body1.Expired())//check expired
             {
                 entry->expired_ = true;
             }
@@ -467,7 +467,7 @@ namespace Urho3D {
                 }
 
                 if (entry->body0->collisionEventMode_) {
-                    if (entry->body0.expired() || entry->body1.expired()) break; //it is possible someone deleted a body in the previous event.
+                    if (entry->body0.Expired() || entry->body1.Expired()) break; //it is possible someone deleted a body in the previous event.
 
                     eventData[NewtonNodeCollisionStart::P_OTHERNODE] = entry->body1->GetNode();
                     eventData[NewtonNodeCollisionStart::P_OTHERBODY] = entry->body1;
@@ -476,7 +476,7 @@ namespace Urho3D {
 
 
                 if (entry->body1->collisionEventMode_) {
-                    if (entry->body0.expired() || entry->body1.expired()) break;
+                    if (entry->body0.Expired() || entry->body1.Expired()) break;
 
                     eventData[NewtonNodeCollisionStart::P_OTHERNODE] = entry->body0->GetNode();
                     eventData[NewtonNodeCollisionStart::P_OTHERBODY] = entry->body0;
@@ -485,7 +485,7 @@ namespace Urho3D {
 
 
                 if (entry->body0->collisionEventMode_ &&entry->body1->collisionEventMode_) {
-                    if (entry->body0.expired() || entry->body1.expired()) break;
+                    if (entry->body0.Expired() || entry->body1.Expired()) break;
 
                     //also send the E_NEWTON_NODECOLLISION event
                     SendEvent(E_NEWTON_PHYSICSCOLLISION, eventData);
@@ -493,7 +493,7 @@ namespace Urho3D {
 
                 if (entry->body0->collisionEventMode_) {
 
-                    if (entry->body0.expired() || entry->body1.expired()) break;
+                    if (entry->body0.Expired() || entry->body1.Expired()) break;
 
                     eventData[NewtonNodeCollisionStart::P_OTHERNODE] = entry->body1->GetNode();
                     eventData[NewtonNodeCollisionStart::P_OTHERBODY] = entry->body1;
@@ -502,7 +502,7 @@ namespace Urho3D {
 
 
                 if (entry->body1->collisionEventMode_) {
-                    if (entry->body0.expired() || entry->body1.expired()) break;
+                    if (entry->body0.Expired() || entry->body1.Expired()) break;
 
                     eventData[NewtonNodeCollisionStart::P_OTHERNODE] = entry->body0->GetNode();
                     eventData[NewtonNodeCollisionStart::P_OTHERBODY] = entry->body0;
@@ -519,14 +519,14 @@ namespace Urho3D {
 
                 if (entry->body0->collisionEventMode_) {
 
-                    if (entry->body0.expired() || entry->body1.expired()) break;
+                    if (entry->body0.Expired() || entry->body1.Expired()) break;
                     eventData[NewtonNodeCollisionStart::P_OTHERNODE] = entry->body1->GetNode();
                     eventData[NewtonNodeCollisionStart::P_OTHERBODY] = entry->body1;
                     entry->body0->GetNode()->SendEvent(E_NEWTON_NODECOLLISIONEND, eventData);
                 }
 
                 if (entry->body1->collisionEventMode_) {
-                    if (entry->body0.expired() || entry->body1.expired()) break;
+                    if (entry->body0.Expired() || entry->body1.Expired()) break;
                     eventData[NewtonNodeCollisionStart::P_OTHERNODE] = entry->body0->GetNode();
                     eventData[NewtonNodeCollisionStart::P_OTHERBODY] = entry->body0;
                     entry->body1->GetNode()->SendEvent(E_NEWTON_NODECOLLISIONEND, eventData);
@@ -540,7 +540,7 @@ namespace Urho3D {
 
 
                 if (entry->body0->collisionEventMode_ == NewtonRigidBody::COLLISION_ALL) {
-                    if (entry->body0.expired() || entry->body1.expired()) break;
+                    if (entry->body0.Expired() || entry->body1.Expired()) break;
 
                     eventData[NewtonNodeCollisionStart::P_OTHERNODE] = entry->body1->GetNode();
                     eventData[NewtonNodeCollisionStart::P_OTHERBODY] = entry->body1;
@@ -549,7 +549,7 @@ namespace Urho3D {
 
                 if (entry->body1->collisionEventMode_ == NewtonRigidBody::COLLISION_ALL) {
 
-                    if (entry->body0.expired() || entry->body1.expired()) break;
+                    if (entry->body0.Expired() || entry->body1.Expired()) break;
 
                     eventData[NewtonNodeCollisionStart::P_OTHERNODE] = entry->body0->GetNode();
                     eventData[NewtonNodeCollisionStart::P_OTHERBODY] = entry->body0;
@@ -795,7 +795,7 @@ namespace Urho3D {
         else
         {
             NewtonMesh* mesh = NewtonMeshCreate(newtonWorld_);
-            ea::shared_ptr<NewtonMeshObject> meshObj = context_->CreateObject<NewtonMeshObject>();
+            SharedPtr<NewtonMeshObject> meshObj = context_->CreateObject<NewtonMeshObject>();
             meshObj->mesh = mesh;
             newtonMeshCache_[urhoNewtonMeshKey] = meshObj;
             return meshObj;
