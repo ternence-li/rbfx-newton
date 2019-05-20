@@ -584,6 +584,11 @@ namespace Urho3D {
 
 
        float timeStep = eventData[SceneSubsystemUpdate::P_TIMESTEP].GetFloat();
+
+	   if (timeStep <= M_EPSILON)
+		   timeStep = timeStepTarget_;
+
+
        timeStepTarget_ = timeStep;
 
        //URHO3D_LOGINFO(String(timeStep));
@@ -610,11 +615,13 @@ namespace Urho3D {
             
             NewtonWaitForUpdateToFinish(newtonWorld_);
             isUpdating_ = false;
+
             // Send post-step event
             VariantMap& eventData = GetEventDataMap();
             eventData[NewtonPhysicsPostStep::P_WORLD] = this;
             eventData[NewtonPhysicsPostStep::P_TIMESTEP] = physicsTimeStep;
             SendEvent(E_NEWTON_PHYSICSPOSTSTEP, eventData);
+
 
         }
         
