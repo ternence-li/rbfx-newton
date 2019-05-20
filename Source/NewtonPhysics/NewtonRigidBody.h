@@ -29,7 +29,7 @@
 #include "Newton.h"
 #include "dVector.h"
 
-
+#include "EASTL/hash_set.h"
 
 class NewtonBody;
 
@@ -379,7 +379,7 @@ namespace Urho3D
         float linearDampeningInternal_ = 0.0f;
 
         ///currently connected constraints.
-        ea::hash_set<NewtonConstraint*> connectedConstraints_;
+        ea::hash_set<WeakPtr<NewtonConstraint>> connectedConstraints_;
 
 
 

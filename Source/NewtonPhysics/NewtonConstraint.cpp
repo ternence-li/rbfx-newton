@@ -536,8 +536,8 @@ namespace Urho3D {
     void NewtonConstraint::AddJointReferenceToBody(NewtonRigidBody* rigBody)
     {
 
-        if (!rigBody->connectedConstraints_.contains(this))
-            rigBody->connectedConstraints_.insert(this);
+        if (!rigBody->connectedConstraints_.contains(WeakPtr<NewtonConstraint>(this)))
+            rigBody->connectedConstraints_.insert(WeakPtr<NewtonConstraint>(this));
 
     }
 
@@ -545,8 +545,8 @@ namespace Urho3D {
     void NewtonConstraint::RemoveJointReferenceFromBody(NewtonRigidBody* rigBody)
     {
 
-        if (rigBody->connectedConstraints_.contains(this))
-            rigBody->connectedConstraints_.erase(this);
+        if (rigBody->connectedConstraints_.contains(WeakPtr<NewtonConstraint>(this)))
+            rigBody->connectedConstraints_.erase(WeakPtr<NewtonConstraint>(this));
 
     }
 

@@ -1024,8 +1024,9 @@ namespace Urho3D {
             }
             //#todo ?
             //remove any connected constraints.
-            for (NewtonConstraint* constraint : connectedConstraints_) {
-                constraint->Remove();
+            for (WeakPtr<NewtonConstraint> constraint : connectedConstraints_) {
+				if(!constraint.Expired())
+					constraint->Remove();
             }
 
 
