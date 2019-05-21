@@ -64,7 +64,6 @@ namespace Urho3D {
 
         GetBodiesInConvexCast(result, numContacts);
         NewtonDestroyCollision(newtonShape);
-
     }
 
 

@@ -5,7 +5,7 @@
 #include "Urho3D/Physics/RigidBody.h"
 #include "Urho3D/Resource/ResourceCache.h"
 #include "NewtonRigidBody.h"
-#include "CollisionShapesDerived.h"
+#include "NewtonCollisionShapesDerived.h"
 
 Node* SpawnSamplePhysicsSphere(Node* parentNode, const Vector3& worldPosition, float radius)
 {

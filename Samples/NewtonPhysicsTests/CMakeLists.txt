@@ -19,7 +19,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 #
-
-add_executable(NewtonPhysicsTests WIN32 PhysicsTests.cpp PhysicsTests.h PhysicsSamplesUtils.h PhysicsSamplesUtils.cpp)
-target_link_libraries(NewtonPhysicsTests PUBLIC NewtonPhysics Urho3D)
+if (NOT URHO3D_WIN32_CONSOLE)
+    set (TARGET_TYPE WIN32)
+endif ()
+add_executable(NewtonPhysicsTests ${TARGET_TYPE} PhysicsTests.cpp PhysicsTests.h PhysicsSamplesUtils.h PhysicsSamplesUtils.cpp)
+target_link_libraries(NewtonPhysicsTests PUBLIC rbfx-newton Urho3D)
 

@@ -166,7 +166,7 @@ private:
 
 	ea::vector<NewtonConstraint*> forceCalculationConstraints_;
 
-    ea::weak_ptr<Node> kinematicNode_;
+    WeakPtr<Node> kinematicNode_;
 
     void CreateScenery(Vector3 worldPosition);
     void RemovePickNode(bool removeRigidBodyOnly = false);

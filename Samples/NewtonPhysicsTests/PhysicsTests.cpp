@@ -36,7 +36,7 @@
 #include <Urho3D/IO/File.h>
 #include <Urho3D/IO/FileSystem.h>
 #include <NewtonCollisionShape.h>
-#include <CollisionShapesDerived.h>
+#include <NewtonCollisionShapesDerived.h>
 #include "Urho3D/Physics/PhysicsWorld.h"
 #include <Urho3D/Physics/RigidBody.h>
 #include <Urho3D/Resource/ResourceCache.h>
@@ -49,12 +49,12 @@
 
 #include <Urho3D/DebugNew.h>
 #include "NewtonFixedDistanceConstraint.h"
-#include "BallAndSocketConstraint.h"
+#include "NewtonBallAndSocketConstraint.h"
 #include "NewtonKinematicsJoint.h"
 #include "NewtonFullyFixedConstraint.h"
 #include "NewtonHingeConstraint.h"
 #include "NewtonSliderConstraint.h"
-#include "PhysicsEvents.h"
+#include "NewtonPhysicsEvents.h"
 #include "Urho3D/UI/Text3D.h"
 
 #include "Urho3D/Graphics/Terrain.h"
@@ -228,7 +228,7 @@ void PhysicsTests::SetupViewport()
     auto* renderer = GetSubsystem<Renderer>();
 
     // Set up a viewport to the Renderer subsystem so that the 3D scene can be seen
-    ea::shared_ptr<Viewport> viewport(new Viewport(context_, scene_, cameraNode_->GetComponent<Camera>()));
+    SharedPtr<Viewport> viewport(new Viewport(context_, scene_, cameraNode_->GetComponent<Camera>()));
     renderer->SetViewport(0, viewport);
 }
 
@@ -246,13 +246,13 @@ void PhysicsTests::SubscribeToEvents()
     SubscribeToEvent(E_MOUSEBUTTONDOWN, URHO3D_HANDLER(PhysicsTests, HandleMouseButtonDown));
 
 
-    SubscribeToEvent(E_PHYSICSCOLLISIONSTART, URHO3D_HANDLER(PhysicsTests, HandleCollisionStart));
-    SubscribeToEvent(E_PHYSICSCOLLISION, URHO3D_HANDLER(PhysicsTests, HandleCollision));
-    SubscribeToEvent(E_PHYSICSCOLLISIONEND, URHO3D_HANDLER(PhysicsTests, HandleCollisionEnd));
+    SubscribeToEvent(E_NEWTON_PHYSICSCOLLISIONSTART, URHO3D_HANDLER(PhysicsTests, HandleCollisionStart));
+    SubscribeToEvent(E_NEWTON_PHYSICSCOLLISION, URHO3D_HANDLER(PhysicsTests, HandleCollision));
+    SubscribeToEvent(E_NEWTON_PHYSICSCOLLISIONEND, URHO3D_HANDLER(PhysicsTests, HandleCollisionEnd));
 
 
-    SubscribeToEvent(E_PHYSICSPRESTEP, URHO3D_HANDLER(PhysicsTests, HandlePhysicsPreStep));
-    SubscribeToEvent(E_PHYSICSPOSTSTEP, URHO3D_HANDLER(PhysicsTests, HandlePhysicsPostStep));
+    SubscribeToEvent(E_NEWTON_PHYSICSPRESTEP, URHO3D_HANDLER(PhysicsTests, HandlePhysicsPreStep));
+    SubscribeToEvent(E_NEWTON_PHYSICSPOSTSTEP, URHO3D_HANDLER(PhysicsTests, HandlePhysicsPostStep));
 }
 
 void PhysicsTests::MoveCamera(float timeStep)
@@ -813,7 +813,7 @@ void PhysicsTests::SpawnBallSocketTest(Vector3 worldPosition)
     Node* sphere1 =  SpawnSamplePhysicsSphere(scene_, worldPosition);
     Node* sphere2 = SpawnSamplePhysicsSphere(scene_, worldPosition + Vector3(0,2.0, 0));
     //sphere1->GetComponent<RigidBody>()->SetMassScale(0);
-    BallAndSocketConstraint* constraint = sphere1->CreateComponent<BallAndSocketConstraint>();
+    NewtonBallAndSocketConstraint* constraint = sphere1->CreateComponent<NewtonBallAndSocketConstraint>();
 
 
     constraint->SetOtherWorldPosition(sphere2->GetWorldPosition() - Vector3(0, 2.0, 0));
@@ -1259,7 +1259,7 @@ void PhysicsTests::HandlePhysicsPreStep(StringHash eventType, VariantMap& eventD
 
 void PhysicsTests::HandlePhysicsPostStep(StringHash eventType, VariantMap& eventData)
 {
-    float timeStep = eventData[PhysicsPostStep::P_TIMESTEP].GetFloat();
+    float timeStep = eventData[NewtonPhysicsPostStep::P_TIMESTEP].GetFloat();
 
 
     //rotate the kinamatic body
@@ -1343,11 +1343,11 @@ void PhysicsTests::HandleMouseButtonDown(StringHash eventType, VariantMap& event
 
 void PhysicsTests::HandleCollisionStart(StringHash eventType, VariantMap& eventData)
 {
-    NewtonRigidBody* bodyA = static_cast<NewtonRigidBody*>(eventData[PhysicsCollisionStart::P_BODYA].GetPtr());
-    NewtonRigidBody* bodyB = static_cast<NewtonRigidBody*>(eventData[PhysicsCollisionStart::P_BODYB].GetPtr());
+    NewtonRigidBody* bodyA = static_cast<NewtonRigidBody*>(eventData[NewtonPhysicsCollisionStart::P_BODYA].GetPtr());
+    NewtonRigidBody* bodyB = static_cast<NewtonRigidBody*>(eventData[NewtonPhysicsCollisionStart::P_BODYB].GetPtr());
 
-    RigidBodyContactEntry* contactData = static_cast<RigidBodyContactEntry*>(eventData[PhysicsCollisionStart::P_CONTACT_DATA].GetPtr());
-    URHO3D_LOGINFO("Collision Start");
+    NewtonRigidBodyContactEntry* contactData = static_cast<NewtonRigidBodyContactEntry*>(eventData[NewtonPhysicsCollisionStart::P_CONTACT_DATA].GetPtr());
+    //URHO3D_LOGINFO("Collision Start");
     for (int i = 0; i < contactData->numContacts; i++) {
         //GetSubsystem<VisualDebugger>()->AddCross(contactData->contactPositions[i], 0.2f, Color::RED, true);
         
@@ -1358,11 +1358,11 @@ void PhysicsTests::HandleCollisionStart(StringHash eventType, VariantMap& eventD
 
 void PhysicsTests::HandleCollision(StringHash eventType, VariantMap& eventData)
 {
-    NewtonRigidBody* bodyA = static_cast<NewtonRigidBody*>(eventData[PhysicsCollisionStart::P_BODYA].GetPtr());
-    NewtonRigidBody* bodyB = static_cast<NewtonRigidBody*>(eventData[PhysicsCollisionStart::P_BODYB].GetPtr());
+    NewtonRigidBody* bodyA = static_cast<NewtonRigidBody*>(eventData[NewtonPhysicsCollisionStart::P_BODYA].GetPtr());
+    NewtonRigidBody* bodyB = static_cast<NewtonRigidBody*>(eventData[NewtonPhysicsCollisionStart::P_BODYB].GetPtr());
 
-    RigidBodyContactEntry* contactData = static_cast<RigidBodyContactEntry*>(eventData[PhysicsCollisionStart::P_CONTACT_DATA].GetPtr());
-    URHO3D_LOGINFO("Collision");
+    NewtonRigidBodyContactEntry* contactData = static_cast<NewtonRigidBodyContactEntry*>(eventData[NewtonPhysicsCollisionStart::P_CONTACT_DATA].GetPtr());
+    //URHO3D_LOGINFO("Collision");
     for (int i = 0; i < contactData->numContacts; i++) {
         //GetSubsystem<VisualDebugger>()->AddCross(contactData->contactPositions[i], 0.2f, Color::GREEN, true);
         
@@ -1372,11 +1372,11 @@ void PhysicsTests::HandleCollision(StringHash eventType, VariantMap& eventData)
 
 void PhysicsTests::HandleCollisionEnd(StringHash eventType, VariantMap& eventData)
 {
-    NewtonRigidBody* bodyA = static_cast<NewtonRigidBody*>(eventData[PhysicsCollisionStart::P_BODYA].GetPtr());
-    NewtonRigidBody* bodyB = static_cast<NewtonRigidBody*>(eventData[PhysicsCollisionStart::P_BODYB].GetPtr());
+    NewtonRigidBody* bodyA = static_cast<NewtonRigidBody*>(eventData[NewtonPhysicsCollisionStart::P_BODYA].GetPtr());
+    NewtonRigidBody* bodyB = static_cast<NewtonRigidBody*>(eventData[NewtonPhysicsCollisionStart::P_BODYB].GetPtr());
 
-    RigidBodyContactEntry* contactData = static_cast<RigidBodyContactEntry*>(eventData[PhysicsCollisionStart::P_CONTACT_DATA].GetPtr());
-    URHO3D_LOGINFO("Collision End\n");
+	NewtonRigidBodyContactEntry* contactData = static_cast<NewtonRigidBodyContactEntry*>(eventData[NewtonPhysicsCollisionStart::P_CONTACT_DATA].GetPtr());
+    //URHO3D_LOGINFO("Collision End\n");
     for (int i = 0; i < contactData->numContacts; i++) {
         //GetSubsystem<VisualDebugger>()->AddCross(contactData->contactPositions[i], 0.2f, Color::BLUE, true);
         
@@ -1580,7 +1580,7 @@ void PhysicsTests::CreatePickTargetNodeOnPhysics()
 
 
         //make a kinematics joint
-        KinematicsControllerConstraint* constraint = pickPullNode->CreateComponent<KinematicsControllerConstraint>();
+		NewtonKinematicsControllerConstraint* constraint = pickPullNode->CreateComponent<NewtonKinematicsControllerConstraint>();
         constraint->SetWorldPosition(pickPullNode->GetChild("PickPullSurfaceNode")->GetWorldPosition());
         constraint->SetWorldRotation(cameraNode_->GetWorldRotation());
         constraint->SetConstrainRotation(false);
@@ -1601,7 +1601,7 @@ void PhysicsTests::ReleasePickTargetOnPhysics()
         {
             rigBody->ResetForces();
         }
-        pickPullNode->RemoveComponent<KinematicsControllerConstraint>();
+        pickPullNode->RemoveComponent<NewtonKinematicsControllerConstraint>();
         pickPullNode = nullptr;
     }
 
@@ -1622,7 +1622,7 @@ void PhysicsTests::UpdatePickPull()
     if (!pickSource)
         return;
 
-    pickPullNode->GetComponent<KinematicsControllerConstraint>()->SetOtherPosition(pickTarget->GetWorldPosition());
-    pickPullNode->GetComponent<KinematicsControllerConstraint>()->SetOtherRotation(cameraNode_->GetWorldRotation() );
+    pickPullNode->GetComponent<NewtonKinematicsControllerConstraint>()->SetOtherPosition(pickTarget->GetWorldPosition());
+    pickPullNode->GetComponent<NewtonKinematicsControllerConstraint>()->SetOtherRotation(cameraNode_->GetWorldRotation() );
 
 }
