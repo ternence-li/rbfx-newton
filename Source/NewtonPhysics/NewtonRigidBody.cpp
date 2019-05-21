@@ -601,7 +601,7 @@ namespace Urho3D {
         if (IsEnabledEffective()) {
             MarkDirty(true);//rebuild.
 
-            //rebuild constriants
+            //rebuild constraints
             for (NewtonConstraint* constraint : connectedConstraints_)
             {
                 constraint->MarkDirty(true);
@@ -611,7 +611,7 @@ namespace Urho3D {
         {
             freeBody();
 
-            //free constriants
+            //free constraints
             for (NewtonConstraint* constraint : connectedConstraints_)
             {
                 constraint->freeInternal();
@@ -724,7 +724,7 @@ namespace Urho3D {
 
                 if (compoundNeeded) {
                     if (sceneRootBodyMode_)
-                        effectiveCollision_ = NewtonCreateSceneCollision(physicsWorld_->GetNewtonWorld(), 0);//internally the same as a regular compond with some flags enabled..
+                        effectiveCollision_ = NewtonCreateSceneCollision(physicsWorld_->GetNewtonWorld(), 0);//internally the same as a regular compound with some flags enabled..
                     else
                         effectiveCollision_ = NewtonCreateCompoundCollision(physicsWorld_->GetNewtonWorld(), 0);
 
@@ -796,7 +796,7 @@ namespace Urho3D {
 
 
                         float densityScaleFactor = 1.0f;
-                        //if we are in the first pass - scale the sub collision by the density.  so when we calculate the intertia matrix it will reflect the density of subshapes.
+                        //if we are in the first pass - scale the sub collision by the density.  so when we calculate the inertia matrix it will reflect the density of sub shapes.
                         //on the 2nd (final pass - scale as normal).
                         if (densityPass)
                             densityScaleFactor = colComp->GetDensity()/smallestDensity;
@@ -1024,10 +1024,10 @@ namespace Urho3D {
             }
             //#todo ?
             //remove any connected constraints.
-            for (WeakPtr<NewtonConstraint> constraint : connectedConstraints_) {
-				if(!constraint.Expired())
-					constraint->Remove();
-            }
+           // for (WeakPtr<NewtonConstraint> constraint : connectedConstraints_) {
+			//	if(!constraint.Expired())
+			//		constraint->Remove();
+            //}
 
 
 
