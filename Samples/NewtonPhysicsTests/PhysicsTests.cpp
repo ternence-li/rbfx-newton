@@ -1225,7 +1225,7 @@ void PhysicsTests::HandleUpdate(StringHash eventType, VariantMap& eventData)
     }
 
 
-    //print forces on force calculation contraints
+    //print forces on force calculation constraints
     for (NewtonConstraint* constraint : forceCalculationConstraints_) {
         //URHO3D_LOGINFO(String(constraint->GetOwnForce()));
 
