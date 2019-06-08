@@ -241,7 +241,7 @@ namespace Urho3D {
                     //grow the pool
                     int prevSize = contactEntryPool_.size();
                     for (int i = 0; i < contactEntryPoolSize_; i++) {
-                        contactEntryPool_.insert(contactEntryPool_.size(), context_->CreateObject<NewtonRigidBodyContactEntry>());
+                        contactEntryPool_.insert_at(contactEntryPool_.size(), context_->CreateObject<NewtonRigidBodyContactEntry>());
                     }
 
                     URHO3D_LOGINFO("PhysicsWorld Contact Entry Pool Grow To: " + eastl::to_string(contactEntryPool_.size()));
@@ -325,7 +325,7 @@ namespace Urho3D {
 
     void NewtonPhysicsWorld::removeCollisionShape(NewtonCollisionShape* collision)
     {
-		collisionComponentList.erase(collisionComponentList.index_of(WeakPtr<NewtonCollisionShape>(collision)));
+		collisionComponentList.erase_at(collisionComponentList.index_of(WeakPtr<NewtonCollisionShape>(collision)));
     }
 
     void NewtonPhysicsWorld::addRigidBody(NewtonRigidBody* body)
@@ -336,7 +336,7 @@ namespace Urho3D {
     void NewtonPhysicsWorld::removeRigidBody(NewtonRigidBody* body)
     {
 
-		rigidBodyComponentList.erase(rigidBodyComponentList.index_of(WeakPtr<NewtonRigidBody>(body)));
+		rigidBodyComponentList.erase_at(rigidBodyComponentList.index_of(WeakPtr<NewtonRigidBody>(body)));
     }
 
     void NewtonPhysicsWorld::addConstraint(NewtonConstraint* constraint)
@@ -349,7 +349,7 @@ namespace Urho3D {
 
     void NewtonPhysicsWorld::removeConstraint(NewtonConstraint* constraint)
     {
-		constraintList.erase(constraintList.index_of(WeakPtr<NewtonConstraint>(constraint)));
+		constraintList.erase_at(constraintList.index_of(WeakPtr<NewtonConstraint>(constraint)));
     }
 
 
