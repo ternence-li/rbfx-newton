@@ -87,7 +87,7 @@ namespace Urho3D {
         }
 
         //set timestep target to max fps
-		timeStepTarget_ = 1.0f / GetSubsystem<Engine>()->GetMaxFps();
+		timeStepTarget_ = 1.0f / GetSubsystem<Engine>()->GetFps();
     }
 
     NewtonPhysicsWorld::~NewtonPhysicsWorld()
