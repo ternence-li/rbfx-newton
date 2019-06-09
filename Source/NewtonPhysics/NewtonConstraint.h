@@ -188,6 +188,7 @@ namespace Urho3D {
         /// Own rigid body.
 		WeakPtr<NewtonRigidBody> ownBody_;
         unsigned ownBodyId_ = 0;
+
         /// Other rigid body.
 		WeakPtr<NewtonRigidBody> otherBody_;
         unsigned otherBodyId_ = 0;

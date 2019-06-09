@@ -414,12 +414,14 @@ namespace Urho3D {
 
     void NewtonConstraint::reEvalConstraint()
 	{
+		
+
 		ownBodyResolved_ = resolveBody(ownBody_);
 
         if (!IsEnabledEffective()) {
             freeInternal();
         }
-        else if (ownBody_ && ownBody_->GetNewtonBody()) {
+        else if (ownBodyResolved_ && ownBodyResolved_->GetNewtonBody()) {
             freeInternal();
 
             bool goodToBuild = true;
@@ -472,6 +474,7 @@ namespace Urho3D {
 					ownBodyResolved_->SetWorldTransform(prevBuiltOwnBodyTransform_);
                 }
 
+				URHO3D_LOGINFO("building constraint..");
                 buildConstraint();
 
 
