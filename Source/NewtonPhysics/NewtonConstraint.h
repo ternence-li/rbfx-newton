@@ -162,14 +162,14 @@ namespace Urho3D {
         NewtonPhysicsWorld* GetPhysicsWorld() const { return physicsWorld_; }
 
         /// Return rigid body in own scene node.
-        NewtonRigidBody* GetOwnBody() const { return ownBody_; }
+        NewtonRigidBody* GetOwnBody(bool resolved = true) const;
 
-        NewtonBody* GetOwnNewtonBody() const;
+        NewtonBody* GetOwnNewtonBody(bool resolved = true) const;
 
         /// Return the other rigid body. May be null if connected to the static world.
-        NewtonRigidBody* GetOtherBody() const { return otherBody_; }
+        NewtonRigidBody* GetOtherBody(bool resolved = true) const;
 
-        NewtonBody* GetOtherNewtonBody() const;
+        NewtonBody* GetOtherNewtonBody(bool resolved = true) const;
 
 
         /// Build the constraint immediatly (once the physics loop has ended)
@@ -191,6 +191,10 @@ namespace Urho3D {
         /// Other rigid body.
 		WeakPtr<NewtonRigidBody> otherBody_;
         unsigned otherBodyId_ = 0;
+
+		WeakPtr<NewtonRigidBody> ownBodyResolved_;
+		WeakPtr<NewtonRigidBody> otherBodyResolved_;
+
         /// Internal newtonJoint.
         dCustomJoint* newtonJoint_ = nullptr;
         /// Flag indicating the two bodies should collide with each other.
@@ -215,8 +219,8 @@ namespace Urho3D {
 
         Matrix3x4 prevBuiltOwnBodyTransform_;
         Matrix3x4 prevBuiltOtherBodyTransform_;
-        Matrix3x4 prevBuiltOwnTransform_;
-        Matrix3x4 prevBuiltOtherTransform_;
+        Matrix3x4 prevBuiltOwnWorldPinTransform_;
+        Matrix3x4 prevBuiltOtherWorldPinTransform_;
         bool hasBeenBuilt_ = false;
 
 
@@ -230,6 +234,8 @@ namespace Urho3D {
         /// Upper level re-evaulation.
         void reEvalConstraint();
         
+		NewtonRigidBody* resolveBody(NewtonRigidBody* body);
+
         /// build the newton constraint.
         virtual void buildConstraint();
 

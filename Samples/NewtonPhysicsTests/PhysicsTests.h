@@ -153,6 +153,10 @@ private:
 
 
 
+	Node* N1 = nullptr;
+	Node* N2 = nullptr;
+	Node* N3 = nullptr;
+
 
     void CreatePickTargetNodeOnPhysics();
     void ReleasePickTargetOnPhysics();

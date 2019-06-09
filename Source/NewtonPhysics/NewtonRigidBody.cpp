@@ -100,7 +100,7 @@ namespace Urho3D {
         URHO3D_ATTRIBUTE("Net Torque", Vector3, netTorque_, Vector3::ZERO, AM_DEFAULT | AM_NOEDIT);
         URHO3D_ATTRIBUTE("Is Scene Root Body", bool, sceneRootBodyMode_, false, AM_DEFAULT | AM_NOEDIT);
 
-       
+        
 
     }
 
@@ -583,6 +583,12 @@ namespace Urho3D {
     void NewtonRigidBody::MarkDirty(bool dirty)
     {
         needsRebuilt_ = dirty;
+
+		////mark constraints dirty too
+		//for (NewtonConstraint* constraint : connectedConstraints_)
+		//{
+		//	constraint->MarkDirty(true);
+		//}
     }
 
     void NewtonRigidBody::MarkInternalTransformDirty(bool dirty)
@@ -600,12 +606,6 @@ namespace Urho3D {
     {
         if (IsEnabledEffective()) {
             MarkDirty(true);//rebuild.
-
-            //rebuild constraints
-            for (NewtonConstraint* constraint : connectedConstraints_)
-            {
-                constraint->MarkDirty(true);
-            }
         }
         else
         {
@@ -616,9 +616,14 @@ namespace Urho3D {
             {
                 constraint->freeInternal();
             }
-
-
         }
+
+
+		/*
+				ea::vector<NewtonRigidBody*> rigidBodies;
+				GetRootRigidBodies(rigidBodies, node_, true);
+
+				rigidBodies.front()->MarkDirty(true);*/
     }
 
     

@@ -865,11 +865,11 @@ namespace Urho3D {
         physicsWorld->isUpdating_ = false;
     }
 
-    //add rigid bodies to the list as the function recurses from node to root. the last rigidbody in rigidBodies is the most root. optionally include the scene as root.
+
+    //add rigid bodies to the list as the function recurses from node to root. the last rigid body in rigidBodies is the most root. optionally include the scene as root.
     void GetRootRigidBodies(ea::vector<NewtonRigidBody*>& rigidBodies, Node* node, bool includeScene)
     {
         NewtonRigidBody* body = node->GetComponent<NewtonRigidBody>();
-
 
         if (body)
             rigidBodies.push_back(body);
@@ -882,28 +882,8 @@ namespace Urho3D {
 
 
 
-	URHONEWTON_API NewtonRigidBody* GetRigidBody(Node* node, bool includeScene)
-    {
-        Node* curNode = node;
 
-        while (curNode) {
-            if (curNode == curNode->GetScene() && !includeScene)
-            {
-                return nullptr;
-            }
-
-            NewtonRigidBody* body = curNode->GetComponent<NewtonRigidBody>();
-
-            if (body)
-                return body;
-
-            curNode = curNode->GetParent();
-        }
-
-        return nullptr;
-    }
-
-    //returns first occuring child rigid bodies.
+    //returns first occurring child rigid bodies from root to child nodes.  last elements of the list are the furthest away from the root. 
 	URHONEWTON_API void GetNextChildRigidBodies(ea::vector<NewtonRigidBody*>& rigidBodies, Node* node)
     {
 
@@ -916,7 +896,6 @@ namespace Urho3D {
             else
                 GetNextChildRigidBodies(rigidBodies, child);
         }
-
     }
 
     //recurses up the scene tree starting at the starting node,  continuing up every branch adding collision shapes to the array until a rigid body is encountered in which case the algorithm stops traversing that branch.

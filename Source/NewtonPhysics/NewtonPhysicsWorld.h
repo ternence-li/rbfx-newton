@@ -349,9 +349,6 @@ namespace Urho3D
 
 
 
-
-
-    URHONEWTON_API NewtonRigidBody* GetRigidBody(Node* node, bool includeScene);
 	URHONEWTON_API void  GetRootRigidBodies(eastl::vector<NewtonRigidBody*>& rigidBodies, Node* node, bool includeScene);
 	URHONEWTON_API void  GetNextChildRigidBodies(eastl::vector<NewtonRigidBody*>& rigidBodies, Node* node);
 	URHONEWTON_API void  GetAloneCollisionShapes(eastl::vector<NewtonCollisionShape*>& colShapes, Node* startingNode, bool includeStartingNodeShapes);

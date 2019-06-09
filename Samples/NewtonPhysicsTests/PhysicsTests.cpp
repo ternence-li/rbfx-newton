@@ -301,15 +301,9 @@ void PhysicsTests::MoveCamera(float timeStep)
 
 
 
-
     if (input->GetKeyPress(KEY_R)) {
 
         //Perform a physics RayCast in camera direction
-
-
-
-
-       
     }
 
     if (input->GetKeyPress(KEY_TAB))
@@ -448,6 +442,14 @@ void PhysicsTests::MoveCamera(float timeStep)
         }
 
     }
+
+
+
+	if (input->GetKeyPress(KEY_4))
+	{
+		N2->GetComponent<NewtonRigidBody>()->SetEnabled(N2->GetComponent<NewtonRigidBody>());
+
+	}
 
 
 
@@ -1550,8 +1552,10 @@ void PhysicsTests::CreatePickTargetNodeOnPhysics()
         if (res.node_->GetName() == "Floor")
             return;
 
-        //get the most root rigid body
-        NewtonRigidBody* candidateBody = GetRigidBody(res.node_, false);
+        //get the first root rigid body
+		ea::vector<NewtonRigidBody*> rgbodies;
+		GetRootRigidBodies(rgbodies, res.node_, false);
+		NewtonRigidBody* candidateBody = rgbodies.front();
         if (!candidateBody)
             return;
 
@@ -1587,8 +1591,6 @@ void PhysicsTests::CreatePickTargetNodeOnPhysics()
         constraint->SetTemporary(true);
     }
 }
-
-
 
 
 void PhysicsTests::ReleasePickTargetOnPhysics()

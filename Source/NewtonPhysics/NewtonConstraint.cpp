@@ -69,8 +69,8 @@ namespace Urho3D {
         URHO3D_ACCESSOR_ATTRIBUTE("ForceCalculationsEnabled", GetEnableForceCalculation, SetEnableForceCalculation, bool, false, AM_DEFAULT);
         URHO3D_ACCESSOR_ATTRIBUTE("Other Body ID", GetOtherBodyId, SetOtherBodyId, unsigned, 0, AM_DEFAULT | AM_COMPONENTID);
 
-        URHO3D_ATTRIBUTE("Prev Built Own Transform", Matrix3x4, prevBuiltOwnTransform_, Matrix3x4::IDENTITY, AM_DEFAULT);
-        URHO3D_ATTRIBUTE("Prev Built Other Transform", Matrix3x4, prevBuiltOtherTransform_, Matrix3x4::IDENTITY, AM_DEFAULT);
+        URHO3D_ATTRIBUTE("Prev Built Own Transform", Matrix3x4, prevBuiltOwnWorldPinTransform_, Matrix3x4::IDENTITY, AM_DEFAULT);
+        URHO3D_ATTRIBUTE("Prev Built Other Transform", Matrix3x4, prevBuiltOtherWorldPinTransform_, Matrix3x4::IDENTITY, AM_DEFAULT);
         URHO3D_ATTRIBUTE("Prev Built Own Body Transform", Matrix3x4, prevBuiltOwnBodyTransform_, Matrix3x4::IDENTITY, AM_DEFAULT);
         URHO3D_ATTRIBUTE("Prev Built Other Body Transform", Matrix3x4, prevBuiltOtherBodyTransform_, Matrix3x4::IDENTITY, AM_DEFAULT);
         URHO3D_ATTRIBUTE("Has Been Built", bool, hasBeenBuilt_, Matrix3x4::IDENTITY, AM_DEFAULT);
@@ -162,8 +162,8 @@ namespace Urho3D {
             if (otherBody_ != nullptr)
                 RemoveJointReferenceFromBody(otherBody_);//remove reference from old body
 
-
-            otherBody_ = body;
+			otherBody_ = body;
+            otherBodyResolved_ = resolveBody(body);
 
             AddJointReferenceToBody(body);
             body->GetNode()->AddListener(this);
@@ -331,16 +331,30 @@ namespace Urho3D {
         return Vector3();
     }
 
-    NewtonBody* NewtonConstraint::GetOwnNewtonBody() const
+	Urho3D::NewtonRigidBody* NewtonConstraint::GetOwnBody(bool resolved /*= true*/) const
+	{
+		if (resolved)
+			return ownBodyResolved_;
+		else
+			return ownBody_;
+	}
+
+	NewtonBody* NewtonConstraint::GetOwnNewtonBody(bool resolved /*= true */) const
     {
-        return ownBody_->GetNewtonBody();
+        return GetOwnBody(resolved)->GetNewtonBody();
     }
 
-    NewtonBody* NewtonConstraint::GetOtherNewtonBody() const
+	Urho3D::NewtonRigidBody* NewtonConstraint::GetOtherBody(bool resolved /*= true*/) const
+	{
+		if (resolved)
+			return otherBodyResolved_;
+		else
+			return otherBody_;
+	}
+
+	NewtonBody* NewtonConstraint::GetOtherNewtonBody(bool resolved /*= true*/) const
     {
-
-        return otherBody_->GetNewtonBody();
-
+        return GetOtherBody(resolved)->GetNewtonBody();
     }
 
     void NewtonConstraint::BuildNow()
@@ -372,7 +386,6 @@ namespace Urho3D {
         //return a frame with no scale at the position and rotation in node space
         Matrix3x4 worldFrame = ownBody_->GetWorldTransform() * Matrix3x4(position_, rotation_, 1.0f);
 
-
         //the frame could have uniform scale - reconstruct with no scale
         Matrix3x4 worldFrameNoScale = Matrix3x4(worldFrame.Translation(), worldFrame.Rotation(), 1.0f);
 
@@ -400,7 +413,9 @@ namespace Urho3D {
     }
 
     void NewtonConstraint::reEvalConstraint()
-    {
+	{
+		ownBodyResolved_ = resolveBody(ownBody_);
+
         if (!IsEnabledEffective()) {
             freeInternal();
         }
@@ -429,6 +444,10 @@ namespace Urho3D {
             }
 
 
+			
+			otherBodyResolved_ = resolveBody(otherBody_);
+
+
 
             if (goodToBuild) {
                 Matrix3x4 ownBodyLoadedTransform;
@@ -440,17 +459,17 @@ namespace Urho3D {
                 if (hasBeenBuilt_) {
 
                     //save loaded node state.
-                    ownBodyLoadedTransform = ownBody_->GetWorldTransform();
-                    ownBodyAngularVelocity = ownBody_->GetAngularVelocity();
-                    ownBodyLinearVelocity = ownBody_->GetLinearVelocity();
+                    ownBodyLoadedTransform = ownBodyResolved_->GetWorldTransform();
+                    ownBodyAngularVelocity = ownBodyResolved_->GetAngularVelocity();
+                    ownBodyLinearVelocity = ownBodyResolved_->GetLinearVelocity();
 
-                    otherBodyLoadedTransform = otherBody_->GetWorldTransform();
-                    otherBodyAngularVelocity = otherBody_->GetAngularVelocity();
-                    otherBodyLinearVelocity = otherBody_->GetLinearVelocity();
+                    otherBodyLoadedTransform = otherBodyResolved_->GetWorldTransform();
+                    otherBodyAngularVelocity = otherBodyResolved_->GetAngularVelocity();
+                    otherBodyLinearVelocity = otherBodyResolved_->GetLinearVelocity();
 
                     //set body to pre-Built Transform
-                    otherBody_->SetWorldTransform(prevBuiltOtherBodyTransform_);
-                    ownBody_->SetWorldTransform(prevBuiltOwnBodyTransform_);
+					otherBodyResolved_->SetWorldTransform(prevBuiltOtherBodyTransform_);
+					ownBodyResolved_->SetWorldTransform(prevBuiltOwnBodyTransform_);
                 }
 
                 buildConstraint();
@@ -458,22 +477,22 @@ namespace Urho3D {
 
                 if (!hasBeenBuilt_) {
                     //save the state of bodies and pins after the first build.
-                    prevBuiltOwnTransform_ = GetOwnNewtonBuildWorldFrame();
+                    prevBuiltOwnWorldPinTransform_ = GetOwnNewtonBuildWorldFrame();
                     prevBuiltOwnBodyTransform_ = ownBody_->GetWorldTransform();
 
-                    prevBuiltOtherTransform_ = GetOtherNewtonBuildWorldFrame();
-                    prevBuiltOtherBodyTransform_ = otherBody_->GetWorldTransform();
+                    prevBuiltOtherWorldPinTransform_ = GetOtherNewtonBuildWorldFrame();
+                    prevBuiltOtherBodyTransform_ = otherBodyResolved_->GetWorldTransform();
                 }
                 else
                 {
                     //restore node state
-                    ownBody_->SetWorldTransform(ownBodyLoadedTransform);
-                    ownBody_->SetLinearVelocity(ownBodyLinearVelocity, false);
-                    ownBody_->SetAngularVelocity(ownBodyAngularVelocity);
+					ownBodyResolved_->SetWorldTransform(ownBodyLoadedTransform);
+					ownBodyResolved_->SetLinearVelocity(ownBodyLinearVelocity, false);
+					ownBodyResolved_->SetAngularVelocity(ownBodyAngularVelocity);
 
-                    otherBody_->SetWorldTransform(otherBodyLoadedTransform);
-                    otherBody_->SetLinearVelocity(otherBodyLinearVelocity, false);
-                    otherBody_->SetAngularVelocity(otherBodyAngularVelocity);
+					otherBodyResolved_->SetWorldTransform(otherBodyLoadedTransform);
+					otherBodyResolved_->SetLinearVelocity(otherBodyLinearVelocity, false);
+					otherBodyResolved_->SetAngularVelocity(otherBodyAngularVelocity);
 
                 }
 
@@ -497,6 +516,26 @@ namespace Urho3D {
 
         MarkDirty(false);
     }
+
+
+
+	Urho3D::NewtonRigidBody* NewtonConstraint::resolveBody(NewtonRigidBody* body)
+	{
+		ea::vector<NewtonRigidBody*> rigidBodies;
+		GetRootRigidBodies(rigidBodies, body->GetNode(), true);
+
+		for (NewtonRigidBody* rb : rigidBodies)
+		{
+			if (rb->IsEnabled()) {
+				if(rb != body)
+					URHO3D_LOGINFO("NewtonConstraint: body resolved..");
+				
+				return rb;
+			}
+		}
+
+		return body;
+	}
 
     void NewtonConstraint::buildConstraint()
     {
@@ -562,7 +601,10 @@ namespace Urho3D {
                 ownBody_ = rigBody;
                 ownBodyId_ = ownBody_->GetID();
             }
-           
+
+			//resolve ownBody just in case it should actually belong to a parent body.
+			ownBodyResolved_ = resolveBody(ownBody_);
+            
             SetOtherBody(physicsWorld_->sceneBody_);
 
             physicsWorld_->addConstraint(this);
@@ -599,7 +641,7 @@ namespace Urho3D {
     Urho3D::Matrix3x4 NewtonConstraint::GetOwnBuildWorldFrame()
     {
         if (hasBeenBuilt_)
-            return Matrix3x4(prevBuiltOwnTransform_.Translation(), prevBuiltOwnTransform_.Rotation(), 1.0f);
+            return Matrix3x4(prevBuiltOwnWorldPinTransform_.Translation(), prevBuiltOwnWorldPinTransform_.Rotation(), 1.0f);
         else
             return GetOwnWorldFrame();
     }
@@ -607,7 +649,7 @@ namespace Urho3D {
     Urho3D::Matrix3x4 NewtonConstraint::GetOtherBuildWorldFrame()
     {
         if (hasBeenBuilt_)
-            return Matrix3x4(prevBuiltOtherTransform_.Translation(), prevBuiltOtherTransform_.Rotation(), 1.0f);
+            return Matrix3x4(prevBuiltOtherWorldPinTransform_.Translation(), prevBuiltOtherWorldPinTransform_.Rotation(), 1.0f);
         else
             return GetOtherWorldFrame();
     }
