@@ -414,8 +414,6 @@ namespace Urho3D {
 
     void NewtonConstraint::reEvalConstraint()
 	{
-		
-
 		ownBodyResolved_ = resolveBody(ownBody_);
 
         if (!IsEnabledEffective()) {
@@ -474,8 +472,11 @@ namespace Urho3D {
 					ownBodyResolved_->SetWorldTransform(prevBuiltOwnBodyTransform_);
                 }
 
-				URHO3D_LOGINFO("building constraint..");
-                buildConstraint();
+				//its possible that the resolved bodies could be the same body, if so, continue without actually building.
+				if (ownBodyResolved_ != otherBodyResolved_) {
+					URHO3D_LOGINFO("building constraint..");
+					buildConstraint();
+				}
 
 
                 if (!hasBeenBuilt_) {
@@ -507,7 +508,7 @@ namespace Urho3D {
             }
 
         }
-        else//we dont have own body so free the joint..
+        else//we don't have own body so free the joint..
         {
             freeInternal();
         }
