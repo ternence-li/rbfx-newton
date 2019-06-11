@@ -93,7 +93,7 @@ namespace Urho3D {
 
     void NewtonSixDofConstraint::buildConstraint()
     {
-        newtonJoint_ = new dCustomSixdof(UrhoToNewton(GetOwnNewtonBuildWorldFrame()), UrhoToNewton(GetOtherNewtonBuildWorldFrame()), GetOwnNewtonBody(), GetOtherNewtonBody());
+        newtonJoint_ = new dCustomSixdof(UrhoToNewton(GetOwnBuildWorldFrame()), UrhoToNewton(GetOtherBuildWorldFrame()), GetOwnNewtonBody(), GetOtherNewtonBody());
 
 
 

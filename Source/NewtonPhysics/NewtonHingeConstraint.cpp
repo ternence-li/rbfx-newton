@@ -322,15 +322,15 @@ namespace Urho3D {
 
         if (powerMode_ == ACTUATOR)
         {
-            newtonJoint_ = new dCustomHingeActuator(UrhoToNewton(GetOwnNewtonBuildWorldFrame()), maxAngularRate_, minAngle_ * dDegreeToRad, maxAngle_ * dDegreeToRad, GetOwnNewtonBody(), GetOtherNewtonBody());
+            newtonJoint_ = new dCustomHingeActuator(UrhoToNewton(GetOwnBuildWorldFrame()), maxAngularRate_, minAngle_ * dDegreeToRad, maxAngle_ * dDegreeToRad, GetOwnNewtonBody(), GetOtherNewtonBody());
         }
         else if (powerMode_ == MOTOR)
         {
-            newtonJoint_ = new dCustomHinge(UrhoToNewton(GetOwnNewtonBuildWorldFrame()), UrhoToNewton(GetOtherNewtonBuildWorldFrame()), GetOwnNewtonBody(), GetOtherNewtonBody());
+            newtonJoint_ = new dCustomHinge(UrhoToNewton(GetOwnBuildWorldFrame()), UrhoToNewton(GetOtherBuildWorldFrame()), GetOwnNewtonBody(), GetOtherNewtonBody());
         }
         else
         {
-            newtonJoint_ = new dCustomHinge(UrhoToNewton(GetOwnNewtonBuildWorldFrame()), UrhoToNewton(GetOtherNewtonBuildWorldFrame()), GetOwnNewtonBody(), GetOtherNewtonBody());
+            newtonJoint_ = new dCustomHinge(UrhoToNewton(GetOwnBuildWorldFrame()), UrhoToNewton(GetOtherBuildWorldFrame()), GetOwnNewtonBody(), GetOtherNewtonBody());
         }
 
 

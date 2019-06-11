@@ -203,7 +203,7 @@ namespace Urho3D {
     void Urho3D::NewtonBallAndSocketConstraint::buildConstraint()
     {
         // Create a dCustomBallAndSocket
-        newtonJoint_ = new dCustomBallAndSocket(UrhoToNewton(GetOwnNewtonBuildWorldFrame()), UrhoToNewton(GetOtherNewtonBuildWorldFrame()), GetOwnNewtonBody(), GetOtherNewtonBody());
+        newtonJoint_ = new dCustomBallAndSocket(UrhoToNewton(GetOwnBuildWorldFrame()), UrhoToNewton(GetOtherBuildWorldFrame()), GetOwnNewtonBody(), GetOtherNewtonBody());
 
         
     }

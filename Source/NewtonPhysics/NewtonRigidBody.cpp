@@ -179,30 +179,36 @@ namespace Urho3D {
 
     Urho3D::Matrix3x4 NewtonRigidBody::GetWorldTransform()
     {
-        
+
+		
         if (newtonBody_ && !physicsWorld_->isUpdating_) {
+			
             dMatrix bodyMatrix;
             NewtonBodyGetMatrix(newtonBody_, &bodyMatrix[0][0]);
 
             return (Matrix3x4(NewtonToUrhoMat4(bodyMatrix)));
         }
         else {
-
+			
             //return the last transform altered by any recent calls to set transform etc..
 
             if (nextTransformNeeded_)
             {
+				
                 return nextTransform_;
             }
             Matrix3x4 transform = node_->GetWorldTransform();
             if (nextPositionNeeded_)
             {
+				
                 transform.SetTranslation(nextPosition_);
             }
             if (nextOrientationNeeded_)
             {
+				
                 transform.SetRotation(nextOrientation_.RotationMatrix());
             }
+			
 
             return transform;
             
@@ -611,19 +617,12 @@ namespace Urho3D {
         {
             freeBody();
 
-            //free constraints
+            //dirty constraints in case they need to resolve to parent bodies.
             for (NewtonConstraint* constraint : connectedConstraints_)
             {
-                constraint->freeInternal();
+				constraint->MarkDirty();
             }
         }
-
-
-		/*
-				ea::vector<NewtonRigidBody*> rigidBodies;
-				GetRootRigidBodies(rigidBodies, node_, true);
-
-				rigidBodies.front()->MarkDirty(true);*/
     }
 
     

@@ -38,8 +38,8 @@ namespace Urho3D {
     void NewtonFullyFixedConstraint::buildConstraint()
     {
 
-        Matrix3x4 ownFrame = GetOwnNewtonBuildWorldFrame();
-        Matrix3x4 otherFrame = GetOtherNewtonBuildWorldFrame();
+        Matrix3x4 ownFrame = GetOwnBuildWorldFrame();
+        Matrix3x4 otherFrame = GetOtherBuildWorldFrame();
 
         //GetSubsystem<VisualDebugger>()->AddFrame(ownFrame, 1.0f, false)->SetLifeTimeMs(100000);
         //GetSubsystem<VisualDebugger>()->AddFrame(otherFrame, 1.0f, false)->SetLifeTimeMs(100000);

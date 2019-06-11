@@ -257,8 +257,6 @@ namespace Urho3D {
 
         Matrix3x4 GetOwnBuildWorldFrame();
         Matrix3x4 GetOtherBuildWorldFrame();
-        Matrix3x4 GetOwnNewtonBuildWorldFrame();
-        Matrix3x4 GetOtherNewtonBuildWorldFrame();
     };
 }
 
