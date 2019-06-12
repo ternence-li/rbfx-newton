@@ -74,7 +74,7 @@ private:
     /// Construct the scene content.
     void CreateScene();
 
-    void SpawnSceneCompoundTest(const Vector3& worldPos, bool oneBody);
+
     void CreatePyramids(Vector3 position);
 
 
@@ -101,7 +101,8 @@ private:
     void SpawnObject();
     void SpawnConvexHull(const Vector3& worldPos);
     void SpawnCompound(const Vector3& worldPos);
-    void SpawnDecompCompound(const Vector3& worldPos);
+    void SpawnDecompCompound(const Vector3& worldPos);    
+	void SpawnSceneCompoundTest(const Vector3& worldPos, bool oneBody);
     void SpawnNSquaredJointedObject(Vector3 worldPosition);
     void SpawnGlueJointedObject(Vector3 worldPosition);
     void SpawnLinearJointedObject(float size, Vector3 worldPosition);
@@ -116,6 +117,9 @@ private:
     void SpawnTrialBike(Vector3 worldPosition, Quaternion orientation, bool enableGyroOnWheels);
     void SpawnHingeSpringTest(const Vector3 ZERO, const Quaternion IDENTITY);
     void SpawnKinematicBodyTest(Vector3 worldPosition, Quaternion worldRotation);
+	void SpawnRejointingTest(Vector3 worldPosition);
+
+
 
     /// Handle the logic update event.
     void HandleUpdate(StringHash eventType, VariantMap& eventData);
@@ -153,9 +157,11 @@ private:
 
 
 
-	Node* N1 = nullptr;
-	Node* N2 = nullptr;
-	Node* N3 = nullptr;
+	Node* reJointRoot = nullptr;
+	Node* reJointA = nullptr;
+	Node* reJointB = nullptr;
+	void ToggleRejointTest();
+
 
 
     void CreatePickTargetNodeOnPhysics();

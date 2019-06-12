@@ -165,7 +165,7 @@ void PhysicsTests::CreateScene()
 
     Quaternion tilt = Quaternion(Random(-1.0f, 1.0f), Vector3(1, 0, 0));
 
-    SpawnTrialBike(Vector3(5, 5, 0),  Quaternion(0, Vector3(0, 1, 0)) * tilt, true);
+    //SpawnTrialBike(Vector3(5, 5, 0),  Quaternion(0, Vector3(0, 1, 0)) * tilt, true);
     //SpawnTrialBike(Vector3(-5, 5, 0), Quaternion(90, Vector3(0, 1, 0)) * tilt, false);
 
     //SpawnKinematicBodyTest(Vector3(0, 0, 0), Quaternion::IDENTITY);
@@ -176,12 +176,14 @@ void PhysicsTests::CreateScene()
 
     //SpawnCollisionExceptionsTest(Vector3(0, 1, 15));
 
-    SpawnSliderTest(Vector3(0, 10, 10));
+    //SpawnSliderTest(Vector3(0, 10, 10));
     //SpawnLinearJointedObject(1.0f, Vector3(10 , 2, 10));
 
-    //SpawnNSquaredJointedObject(Vector3(-20, 10, 10));
+    //SpawnNSquaredJointedObject(Vector3(-20, 20, 10));
 
     //SpawnCompoundedRectTest(Vector3(20, 10, 10));
+
+	SpawnRejointingTest(Vector3(0, 10, 0));
 
     ////////create scale test
     //SpawnSceneCompoundTest(Vector3(-20, 10, 20), true);
@@ -447,7 +449,7 @@ void PhysicsTests::MoveCamera(float timeStep)
 
 	if (input->GetKeyPress(KEY_4))
 	{
-		N2->GetComponent<NewtonRigidBody>()->SetEnabled(N2->GetComponent<NewtonRigidBody>());
+		ToggleRejointTest();
 
 	}
 
@@ -1543,6 +1545,38 @@ void PhysicsTests::SpawnKinematicBodyTest(Vector3 worldPosition, Quaternion worl
     kinematicNode_ = box;
 
 
+}
+
+void PhysicsTests::SpawnRejointingTest(Vector3 worldPosition)
+{
+	reJointA = SpawnSamplePhysicsBox(scene_, worldPosition + Vector3(-1.0f, 0, 0), Vector3::ONE);
+	reJointB = SpawnSamplePhysicsBox(scene_, worldPosition + Vector3( 1.0f, 0, 0), Vector3::ONE);
+
+	reJointA->SetName("reJointA");
+	reJointB->SetName("reJointB");
+
+
+	NewtonFixedDistanceConstraint* constraint = reJointA->CreateComponent<NewtonFixedDistanceConstraint>();
+	
+	reJointRoot = scene_->CreateChild("reJointRoot");
+	reJointRoot->CreateComponent<NewtonRigidBody>();
+	reJointRoot->GetComponent<NewtonRigidBody>()->SetEnabled(false);
+
+	reJointA->SetParent(reJointRoot);
+	reJointB->SetParent(reJointRoot);
+}
+
+
+
+
+void PhysicsTests::ToggleRejointTest()
+{
+	URHO3D_LOGINFO("toggling rejoint test");
+	bool curEnabled = reJointRoot->GetComponent<NewtonRigidBody>()->IsEnabled();
+
+	reJointA->GetComponent<NewtonRigidBody>()->SetEnabled(curEnabled);
+	reJointB->GetComponent<NewtonRigidBody>()->SetEnabled(curEnabled);
+	reJointRoot->GetComponent<NewtonRigidBody>()->SetEnabled(!curEnabled);
 }
 
 void PhysicsTests::CreatePickTargetNodeOnPhysics()

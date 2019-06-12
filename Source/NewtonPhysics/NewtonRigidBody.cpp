@@ -191,7 +191,6 @@ namespace Urho3D {
         else {
 			
             //return the last transform altered by any recent calls to set transform etc..
-
             if (nextTransformNeeded_)
             {
 				

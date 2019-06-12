@@ -129,8 +129,8 @@ namespace Urho3D {
         Color zAxisDark = zAxisC.Lerp(Color::BLACK, 0.5f);
 
 		//#todo re enable!
-        //debug->AddFrame(GetOwnWorldFrame(), axisLengths, xAxisC, yAxisC, zAxisC, depthTest);
-        //debug->AddFrame(GetOtherWorldFrame(), axisLengths, xAxisDark, yAxisDark, zAxisDark, depthTest);
+        debug->AddFrame(GetOwnWorldFrame(), axisLengths, xAxisC, yAxisC, zAxisC, depthTest);
+        debug->AddFrame(GetOtherWorldFrame(), axisLengths, xAxisDark, yAxisDark, zAxisDark, depthTest);
 
 
         //draw the special joint stuff given to us by newton
@@ -140,7 +140,6 @@ namespace Urho3D {
         {
             newtonJoint_->Debug(&debugDisplay);//#todo this sometimes covers up the 2 frames above - maybe alter inside newton instead?
         }
-
     }
 
     void NewtonConstraint::MarkDirty(bool dirty /*= true*/)
@@ -329,25 +328,24 @@ namespace Urho3D {
         return Vector3();
     }
 
-	Urho3D::NewtonRigidBody* NewtonConstraint::GetOwnBody(bool resolved /*= true*/) const
+	Urho3D::NewtonRigidBody* NewtonConstraint::GetOwnBody(bool useResolved /*= true*/) const
 	{
-		if (resolved)
+		if (useResolved && (ownBodyResolved_ != ownBody_))
 		{
-			URHO3D_LOGINFO("using resolved body");
 			return ownBodyResolved_;
 		}
 		else
 			return ownBody_;
 	}
 
-	NewtonBody* NewtonConstraint::GetOwnNewtonBody(bool resolved /*= true */) const
+	NewtonBody* NewtonConstraint::GetOwnNewtonBody(bool useResolved /*= true */) const
     {
-        return GetOwnBody(resolved)->GetNewtonBody();
+        return GetOwnBody(useResolved)->GetNewtonBody();
     }
 
-	Urho3D::NewtonRigidBody* NewtonConstraint::GetOtherBody(bool resolved /*= true*/) const
+	Urho3D::NewtonRigidBody* NewtonConstraint::GetOtherBody(bool useResolved /*= true*/) const
 	{
-		if (resolved)
+		if (useResolved && (otherBodyResolved_ != otherBody_))
 			return otherBodyResolved_;
 		else
 			return otherBody_;
@@ -392,10 +390,10 @@ namespace Urho3D {
 
 
 		//URHO3D_LOGINFO(ea::to_string((long)(void*)this) + " ownbody transform is " + ownBody_->GetWorldTransform().ToString());
-		URHO3D_LOGINFO(ea::to_string((long)(void*)this) + " ownworldframe is " + worldFrame.ToString());
-		URHO3D_LOGINFO(ea::to_string((long)(void*)this) + " ownbody is " + ea::to_string((long)(void*)ownBody_));
-		URHO3D_LOGINFO("local position is " + position_.ToString());
-		URHO3D_LOGINFO("");
+		//URHO3D_LOGINFO(ea::to_string((long)(void*)this) + " ownworldframe is " + worldFrame.ToString());
+		//URHO3D_LOGINFO(ea::to_string((long)(void*)this) + " ownbody is " + ea::to_string((long)(void*)ownBody_));
+		//URHO3D_LOGINFO("local position is " + position_.ToString());
+		//URHO3D_LOGINFO("");
 		 
         return worldFrameNoScale;
 
@@ -476,8 +474,8 @@ namespace Urho3D {
                     otherBodyLinearVelocity = otherBodyResolved_->GetLinearVelocity();
 
                     //set body to pre-Built Transform
-					otherBodyResolved_->SetWorldTransform(prevBuiltOtherBodyTransform_);
-					ownBodyResolved_->SetWorldTransform(prevBuiltOwnBodyTransform_);
+					//otherBodyResolved_->SetWorldTransform(prevBuiltOtherBodyTransform_);
+					//ownBodyResolved_->SetWorldTransform(prevBuiltOwnBodyTransform_);
                 }
 
 				//its possible that the resolved bodies could be the same body, if so, continue without actually building.
@@ -498,13 +496,13 @@ namespace Urho3D {
                 else
                 {
                     //restore node state
-					ownBodyResolved_->SetWorldTransform(ownBodyLoadedTransform);
-					ownBodyResolved_->SetLinearVelocity(ownBodyLinearVelocity, false);
-					ownBodyResolved_->SetAngularVelocity(ownBodyAngularVelocity);
+					//ownBodyResolved_->SetWorldTransform(ownBodyLoadedTransform);
+					//ownBodyResolved_->SetLinearVelocity(ownBodyLinearVelocity, false);
+					//ownBodyResolved_->SetAngularVelocity(ownBodyAngularVelocity);
 
-					otherBodyResolved_->SetWorldTransform(otherBodyLoadedTransform);
-					otherBodyResolved_->SetLinearVelocity(otherBodyLinearVelocity, false);
-					otherBodyResolved_->SetAngularVelocity(otherBodyAngularVelocity);
+					//otherBodyResolved_->SetWorldTransform(otherBodyLoadedTransform);
+					//otherBodyResolved_->SetLinearVelocity(otherBodyLinearVelocity, false);
+					//otherBodyResolved_->SetAngularVelocity(otherBodyAngularVelocity);
                 }
 
 
@@ -539,7 +537,7 @@ namespace Urho3D {
 		{
 			if (rb->IsEnabled()) {
 				if(rb != body)
-					URHO3D_LOGINFO("NewtonConstraint(" + ea::to_string((long)(void*)this) + "): body resolved..");
+					URHO3D_LOGINFO("NewtonConstraint(" + ea::to_string((long)(void*)this) + "): body resolved from node name " + body->GetNode()->GetName() + " to node name " + rb->GetNode()->GetName());
 				
 				return rb;
 			}
@@ -651,19 +649,18 @@ namespace Urho3D {
 
     Urho3D::Matrix3x4 NewtonConstraint::GetOwnBuildWorldFrame()
     {
-		//if (hasBeenBuilt_) {
-		//	URHO3D_LOGINFO("using previously Built frame.");
-		//	return Matrix3x4(prevBuiltOwnWorldPinTransform_.Translation(), prevBuiltOwnWorldPinTransform_.Rotation(), 1.0f);
-		//}
-       // else
+		if (hasBeenBuilt_) {
+			return Matrix3x4(prevBuiltOwnWorldPinTransform_.Translation(), prevBuiltOwnWorldPinTransform_.Rotation(), 1.0f);
+		}
+		else
             return GetOwnWorldFrame();
     }
 
     Urho3D::Matrix3x4 NewtonConstraint::GetOtherBuildWorldFrame()
     {
-        //if (hasBeenBuilt_)
-        //    return Matrix3x4(prevBuiltOtherWorldPinTransform_.Translation(), prevBuiltOtherWorldPinTransform_.Rotation(), 1.0f);
-        //else
+		if (hasBeenBuilt_)
+			return Matrix3x4(prevBuiltOtherWorldPinTransform_.Translation(), prevBuiltOtherWorldPinTransform_.Rotation(), 1.0f);
+		else
             return GetOtherWorldFrame();
     }
 

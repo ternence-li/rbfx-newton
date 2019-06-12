@@ -12,6 +12,7 @@
 #include "Newton.h"
 #include "dMatrix.h"
 #include "dCustomFixDistance.h"
+#include "Urho3D/IO/Log.h"
 
 
 
@@ -50,7 +51,11 @@ namespace Urho3D {
         dVector pivot1 = UrhoToNewton(GetOtherBuildWorldFrame().Translation());
         
 
+		URHO3D_LOGINFO("Building NewtonFixedDistanceConstraint..");
 
+		URHO3D_LOGINFO("OwnBuildWorldFrame: " + GetOwnBuildWorldFrame().ToString());
+
+		URHO3D_LOGINFO("Own Body Node: " + GetOwnBody()->GetNode()->GetName());
 
 
         newtonJoint_ = new dCustomFixDistance(pivot0, pivot1, GetOwnNewtonBody(), GetOtherNewtonBody());
