@@ -1298,7 +1298,6 @@ void PhysicsTests::DecomposePhysicsTree()
         //    child->SetParent(scene_);
         //}
 
-
         res[1].node_->SetParent(scene_);
     }
 }
@@ -1454,7 +1453,6 @@ void PhysicsTests::CreateScenery(Vector3 worldPosition)
         ramp->SetWorldRotation(Quaternion(0, 0, 20));
 
         //// Make the floor physical by adding NewtonCollisionShape component. 
-
         auto* shape = ramp->CreateComponent<NewtonCollisionShape_Box>();
         }
     }

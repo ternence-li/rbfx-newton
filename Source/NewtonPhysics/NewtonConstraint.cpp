@@ -428,8 +428,6 @@ namespace Urho3D {
         else if (ownBodyResolved_ && ownBodyResolved_->GetNewtonBody()) {
             freeInternal();
 
-            bool goodToBuild = true;
-
 
             if (otherBodyId_ > 0) {
                 NewtonRigidBody* body = (NewtonRigidBody*)GetScene()->GetComponent(otherBodyId_);
@@ -445,15 +443,13 @@ namespace Urho3D {
 
 
             if (otherBody_->GetEffectiveMass() <= 0.0f && ownBody_->GetEffectiveMass() <= 0.0f) {
-                goodToBuild = false;
                 URHO3D_LOGWARNING("Contraint must connect to at least 1 Rigid Body with mass greater than 0.");
+				break;
             }
 
 
 			
 			otherBodyResolved_ = resolveBody(otherBody_);
-
-
 
             if (goodToBuild) {
                 Matrix3x4 ownBodyLoadedTransform;
