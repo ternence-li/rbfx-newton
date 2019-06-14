@@ -924,14 +924,26 @@ namespace Urho3D {
     }
 
 
+	//given a group of rigid bodies, calculates an approximate overall velocity if the bodies were to be instantly fused together. (conservation of momentum)
+	void CalculateRigidBodyGroupFusedVelocities(ea::vector<NewtonRigidBody*>& rigidBodies, Vector3& worldVelocity, Vector3& worldAngularVelocity)
+	{
+		//Vector3 totalLinearMomentum = Vector3::ZERO;
+		//Vector3 totalAngularMomentum = Vector3::ZERO;
 
+		//float totalMass = 0.0f;
+		//for (NewtonRigidBody* body : rigidBodies) {
 
+		//	totalLinearMomentum += body->GetLinearVelocity() * body->GetEffectiveMass();
 
+		//	totalAngularMomentum += body->GetAngularMomentum();
+		//	totalMass += body->GetEffectiveMass();
+		//}
 
+		//worldVelocity = totalLinearMomentum / totalMass;
+		//worldAngularVelocity = totalAngularMomentum
+	}
 
-
-
-    void RebuildPhysicsNodeTree(Node* node)
+	void RebuildPhysicsNodeTree(Node* node)
     {
         //trigger a rebuild on the root of the new tree.
 		ea::vector<NewtonRigidBody*> rigBodies;

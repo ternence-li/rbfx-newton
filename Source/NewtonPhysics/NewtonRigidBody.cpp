@@ -296,7 +296,20 @@ namespace Urho3D {
     
     
     
-    void NewtonRigidBody::SetLinearVelocity(const Vector3& worldVelocity, bool useForces)
+	Urho3D::Vector3 NewtonRigidBody::GetAngularMomentum() const
+	{
+		dMatrix inertiaMatrix;
+		NewtonBodyGetInertiaMatrix(newtonBody_, &inertiaMatrix[0][0]);
+		Vector3 angularVelocity = GetAngularVelocity(TS_WORLD);
+
+
+		return Vector3(inertiaMatrix[0][0]*angularVelocity.x_ + inertiaMatrix[0][1] * angularVelocity.y_ + inertiaMatrix[0][2] * angularVelocity.z_,
+			inertiaMatrix[1][0] * angularVelocity.x_ + inertiaMatrix[1][1] * angularVelocity.y_ + inertiaMatrix[1][2] * angularVelocity.z_,
+			inertiaMatrix[2][0] * angularVelocity.x_ + inertiaMatrix[2][1] * angularVelocity.y_ + inertiaMatrix[2][2] * angularVelocity.z_
+			);
+	}
+
+	void NewtonRigidBody::SetLinearVelocity(const Vector3& worldVelocity, bool useForces)
     {
         if (newtonBody_ && !physicsWorld_->isUpdating_)
         {
@@ -333,6 +346,7 @@ namespace Urho3D {
         if (newtonBody_ && !physicsWorld_->isUpdating_)
         {
             Activate();
+
 
             Vector3 angularVelocityRadians = angularVelocity * M_DEGTORAD;
 
@@ -721,9 +735,6 @@ namespace Urho3D {
                     NewtonDestroyCollision(effectiveCollision_);
                     effectiveCollision_ = nullptr;
                 }
-
-
-
 
                 if (compoundNeeded) {
                     if (sceneRootBodyMode_)

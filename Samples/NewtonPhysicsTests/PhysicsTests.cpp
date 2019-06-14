@@ -179,11 +179,11 @@ void PhysicsTests::CreateScene()
     //SpawnSliderTest(Vector3(0, 10, 10));
     //SpawnLinearJointedObject(1.0f, Vector3(10 , 2, 10));
 
-    //SpawnNSquaredJointedObject(Vector3(-20, 20, 10));
+    SpawnNSquaredJointedObject(Vector3(-20, 20, 10));
 
     //SpawnCompoundedRectTest(Vector3(20, 10, 10));
 
-	SpawnRejointingTest(Vector3(0, 10, 0));
+	//SpawnRejointingTest(Vector3(0, 10, 0));
 
     ////////create scale test
     //SpawnSceneCompoundTest(Vector3(-20, 10, 20), true);
@@ -690,7 +690,7 @@ void PhysicsTests::SpawnNSquaredJointedObject(Vector3 worldPosition)
     //lets joint spheres together with a distance limiting joint.
     const float dist = 5.0f;
 
-    const int numSpheres = 25;
+    const int numSpheres = 20;
 
     ea::vector<Node*> nodes;
     //make lots of spheres

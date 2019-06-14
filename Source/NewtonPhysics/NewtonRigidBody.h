@@ -119,7 +119,7 @@ namespace Urho3D
         float GetMassScale() const { return massScale_; }
 
         /// get the mass of the rigid body
-        float GetEffectiveMass() { return mass_; }
+        float GetEffectiveMass() const { return mass_; }
 
         /// set the collision layer
         void SetCollisionLayer(unsigned layer);
@@ -192,8 +192,10 @@ namespace Urho3D
         bool GetGenerateContacts() const { return generateContacts_; }
 
 
+		/// 
+		Vector3 GetLinearMomentum() const { return GetLinearVelocity() * GetEffectiveMass(); }
 
-
+		Vector3 GetAngularMomentum()  const;
 
         /// Set linear velocity in world cordinates. if useForces is false the velocity will be set exactly with no regard to using forces to achieve the desired velocity.
         void SetLinearVelocity(const Vector3& worldVelocity, bool useForces = true);
