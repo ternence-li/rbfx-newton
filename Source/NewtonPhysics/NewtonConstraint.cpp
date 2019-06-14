@@ -444,70 +444,66 @@ namespace Urho3D {
 
             if (otherBody_->GetEffectiveMass() <= 0.0f && ownBody_->GetEffectiveMass() <= 0.0f) {
                 URHO3D_LOGWARNING("Contraint must connect to at least 1 Rigid Body with mass greater than 0.");
-				break;
+				MarkDirty(false);
+				return;
             }
-
-
 			
 			otherBodyResolved_ = resolveBody(otherBody_);
 
-            if (goodToBuild) {
-                Matrix3x4 ownBodyLoadedTransform;
-                Matrix3x4 otherBodyLoadedTransform;
-                Vector3 ownBodyAngularVelocity;
-                Vector3 otherBodyAngularVelocity;
-                Vector3 ownBodyLinearVelocity;
-                Vector3 otherBodyLinearVelocity;
-                if (hasBeenBuilt_) {
+            Matrix3x4 ownBodyLoadedTransform;
+            Matrix3x4 otherBodyLoadedTransform;
+            Vector3 ownBodyAngularVelocity;
+            Vector3 otherBodyAngularVelocity;
+            Vector3 ownBodyLinearVelocity;
+            Vector3 otherBodyLinearVelocity;
+            if (hasBeenBuilt_) {
 
-                    //save loaded node state.
-                    ownBodyLoadedTransform = ownBodyResolved_->GetWorldTransform();
-                    ownBodyAngularVelocity = ownBodyResolved_->GetAngularVelocity();
-                    ownBodyLinearVelocity = ownBodyResolved_->GetLinearVelocity();
+                //save loaded node state.
+                ownBodyLoadedTransform = ownBodyResolved_->GetWorldTransform();
+                ownBodyAngularVelocity = ownBodyResolved_->GetAngularVelocity();
+                ownBodyLinearVelocity = ownBodyResolved_->GetLinearVelocity();
 
-                    otherBodyLoadedTransform = otherBodyResolved_->GetWorldTransform();
-                    otherBodyAngularVelocity = otherBodyResolved_->GetAngularVelocity();
-                    otherBodyLinearVelocity = otherBodyResolved_->GetLinearVelocity();
+                otherBodyLoadedTransform = otherBodyResolved_->GetWorldTransform();
+                otherBodyAngularVelocity = otherBodyResolved_->GetAngularVelocity();
+                otherBodyLinearVelocity = otherBodyResolved_->GetLinearVelocity();
 
-                    //set body to pre-Built Transform
-					//otherBodyResolved_->SetWorldTransform(prevBuiltOtherBodyTransform_);
-					//ownBodyResolved_->SetWorldTransform(prevBuiltOwnBodyTransform_);
-                }
-
-				//its possible that the resolved bodies could be the same body, if so, continue without actually building.
-				if (ownBodyResolved_ != otherBodyResolved_) {
-					URHO3D_LOGINFO("building constraint");
-					buildConstraint();
-				}
-
-
-                if (!hasBeenBuilt_) {
-                    //save the state of bodies and pins after the first build.
-                    prevBuiltOwnWorldPinTransform_ = GetOwnBuildWorldFrame();
-                    prevBuiltOwnBodyTransform_ = ownBody_->GetWorldTransform();
-
-                    prevBuiltOtherWorldPinTransform_ = GetOtherBuildWorldFrame();
-                    prevBuiltOtherBodyTransform_ = otherBodyResolved_->GetWorldTransform();
-                }
-                else
-                {
-                    //restore node state
-					//ownBodyResolved_->SetWorldTransform(ownBodyLoadedTransform);
-					//ownBodyResolved_->SetLinearVelocity(ownBodyLinearVelocity, false);
-					//ownBodyResolved_->SetAngularVelocity(ownBodyAngularVelocity);
-
-					//otherBodyResolved_->SetWorldTransform(otherBodyLoadedTransform);
-					//otherBodyResolved_->SetLinearVelocity(otherBodyLinearVelocity, false);
-					//otherBodyResolved_->SetAngularVelocity(otherBodyAngularVelocity);
-                }
-
-
-                applyAllJointParams();
-
-
-                hasBeenBuilt_ = true;
+                //set body to pre-Built Transform
+				//otherBodyResolved_->SetWorldTransform(prevBuiltOtherBodyTransform_);
+				//ownBodyResolved_->SetWorldTransform(prevBuiltOwnBodyTransform_);
             }
 
+			//its possible that the resolved bodies could be the same body, if so, continue without actually building.
+			if (ownBodyResolved_ != otherBodyResolved_) {
+				URHO3D_LOGINFO("building constraint");
+				buildConstraint();
+			}
+
+
+            if (!hasBeenBuilt_) {
+                //save the state of bodies and pins after the first build.
+                prevBuiltOwnWorldPinTransform_ = GetOwnBuildWorldFrame();
+                prevBuiltOwnBodyTransform_ = ownBody_->GetWorldTransform();
+
+                prevBuiltOtherWorldPinTransform_ = GetOtherBuildWorldFrame();
+                prevBuiltOtherBodyTransform_ = otherBodyResolved_->GetWorldTransform();
+            }
+            else
+            {
+                //restore node state
+				//ownBodyResolved_->SetWorldTransform(ownBodyLoadedTransform);
+				//ownBodyResolved_->SetLinearVelocity(ownBodyLinearVelocity, false);
+				//ownBodyResolved_->SetAngularVelocity(ownBodyAngularVelocity);
+
+				//otherBodyResolved_->SetWorldTransform(otherBodyLoadedTransform);
+				//otherBodyResolved_->SetLinearVelocity(otherBodyLinearVelocity, false);
+				//otherBodyResolved_->SetAngularVelocity(otherBodyAngularVelocity);
+            }
+
+
+            applyAllJointParams();
+
+
+            hasBeenBuilt_ = true;
         }
         else//we don't have own body so free the joint..
         {
