@@ -179,11 +179,11 @@ void PhysicsTests::CreateScene()
     //SpawnSliderTest(Vector3(0, 10, 10));
     //SpawnLinearJointedObject(1.0f, Vector3(10 , 2, 10));
 
-    SpawnNSquaredJointedObject(Vector3(-20, 20, 10));
+    //SpawnNSquaredJointedObject(Vector3(-20, 20, 10));
 
     //SpawnCompoundedRectTest(Vector3(20, 10, 10));
 
-	//SpawnRejointingTest(Vector3(0, 10, 0));
+	SpawnRejointingTest(Vector3(0, 10, 0));
 
     ////////create scale test
     //SpawnSceneCompoundTest(Vector3(-20, 10, 20), true);
@@ -690,13 +690,14 @@ void PhysicsTests::SpawnNSquaredJointedObject(Vector3 worldPosition)
     //lets joint spheres together with a distance limiting joint.
     const float dist = 5.0f;
 
-    const int numSpheres = 20;
+    const int numSpheres = 25;
 
     ea::vector<Node*> nodes;
     //make lots of spheres
     for (int i = 0; i < numSpheres; i++)
     {
-        Node* node = SpawnSamplePhysicsSphere(scene_, worldPosition  + Vector3(0,dist*0.5f,0) - Quaternion(Random()*360.0f, Random()*360.0f, Random()*360.0f) * (Vector3::FORWARD*dist));
+        Node* node = SpawnSamplePhysicsSphere(scene_, worldPosition  + Vector3(0,dist*0.5f,0) - Quaternion(Random()*360.0f, 
+			Random()*360.0f, Random()*360.0f) * (Vector3::FORWARD*dist));
       
         nodes.push_back(node);
         
@@ -1202,6 +1203,44 @@ void PhysicsTests::SpawnTrialBike(Vector3 worldPosition, Quaternion orientation,
     root->SetWorldRotation(orientation);
 }
 
+void PhysicsTests::SpawnKinematicBodyTest(Vector3 worldPosition, Quaternion worldRotation)
+{
+    Node* box = SpawnSamplePhysicsBox(scene_, worldPosition, Vector3(10, 1, 10));
+
+    Node* box2 = SpawnSamplePhysicsBox(scene_, worldPosition + Vector3(0, 5,0), Vector3(5, 1, 5));
+
+    box2->SetParent(box);
+
+    box->GetComponent<NewtonRigidBody>()->SetIsKinematic(true);
+    box2->GetComponent<NewtonRigidBody>()->SetIsKinematic(true);
+
+    kinematicNode_ = box;
+
+
+}
+
+void PhysicsTests::SpawnRejointingTest(Vector3 worldPosition)
+{
+	reJointA = SpawnSamplePhysicsBox(scene_, worldPosition + Vector3(-1.0f, 0, 0), Vector3::ONE);
+	reJointB = SpawnSamplePhysicsBox(scene_, worldPosition + Vector3( 1.0f, 0, 0), Vector3::ONE);
+
+	reJointA->SetName("reJointA");
+	reJointB->SetName("reJointB");
+
+
+	NewtonFixedDistanceConstraint* constraint = reJointA->CreateComponent<NewtonFixedDistanceConstraint>();
+	
+	reJointRoot = scene_->CreateChild("reJointRoot");
+	reJointRoot->CreateComponent<NewtonRigidBody>();
+	reJointRoot->GetComponent<NewtonRigidBody>()->SetEnabled(false);
+
+	reJointA->SetParent(reJointRoot);
+	reJointB->SetParent(reJointRoot);
+}
+
+
+
+
 void PhysicsTests::HandleUpdate(StringHash eventType, VariantMap& eventData)
 {
     using namespace Update;
@@ -1527,44 +1566,6 @@ void PhysicsTests::RemovePickNode(bool removeRigidBodyOnly /*= false*/)
         }
     }
 }
-
-
-void PhysicsTests::SpawnKinematicBodyTest(Vector3 worldPosition, Quaternion worldRotation)
-{
-    Node* box = SpawnSamplePhysicsBox(scene_, worldPosition, Vector3(10, 1, 10));
-
-    Node* box2 = SpawnSamplePhysicsBox(scene_, worldPosition + Vector3(0, 5,0), Vector3(5, 1, 5));
-
-    box2->SetParent(box);
-
-    box->GetComponent<NewtonRigidBody>()->SetIsKinematic(true);
-    box2->GetComponent<NewtonRigidBody>()->SetIsKinematic(true);
-
-    kinematicNode_ = box;
-
-
-}
-
-void PhysicsTests::SpawnRejointingTest(Vector3 worldPosition)
-{
-	reJointA = SpawnSamplePhysicsBox(scene_, worldPosition + Vector3(-1.0f, 0, 0), Vector3::ONE);
-	reJointB = SpawnSamplePhysicsBox(scene_, worldPosition + Vector3( 1.0f, 0, 0), Vector3::ONE);
-
-	reJointA->SetName("reJointA");
-	reJointB->SetName("reJointB");
-
-
-	NewtonFixedDistanceConstraint* constraint = reJointA->CreateComponent<NewtonFixedDistanceConstraint>();
-	
-	reJointRoot = scene_->CreateChild("reJointRoot");
-	reJointRoot->CreateComponent<NewtonRigidBody>();
-	reJointRoot->GetComponent<NewtonRigidBody>()->SetEnabled(false);
-
-	reJointA->SetParent(reJointRoot);
-	reJointB->SetParent(reJointRoot);
-}
-
-
 
 
 void PhysicsTests::ToggleRejointTest()

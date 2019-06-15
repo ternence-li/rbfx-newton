@@ -80,8 +80,6 @@ namespace Urho3D {
         URHO3D_ATTRIBUTE("Other Body Frame Rotation", Quaternion, otherRotation_, Quaternion::IDENTITY, AM_DEFAULT);
         URHO3D_ATTRIBUTE("Body Frame Position", Vector3, position_, Vector3::ZERO, AM_DEFAULT);
         URHO3D_ATTRIBUTE("Body Frame Rotation", Quaternion, rotation_, Quaternion::IDENTITY, AM_DEFAULT);
-
-
     }
 
     void NewtonConstraint::DrawDebugGeometry(DebugRenderer* debug, bool depthTest)
@@ -387,13 +385,6 @@ namespace Urho3D {
 
         //the frame could have uniform scale - reconstruct with no scale
         Matrix3x4 worldFrameNoScale = Matrix3x4(worldFrame.Translation(), worldFrame.Rotation(), 1.0f);
-
-
-		//URHO3D_LOGINFO(ea::to_string((long)(void*)this) + " ownbody transform is " + ownBody_->GetWorldTransform().ToString());
-		//URHO3D_LOGINFO(ea::to_string((long)(void*)this) + " ownworldframe is " + worldFrame.ToString());
-		//URHO3D_LOGINFO(ea::to_string((long)(void*)this) + " ownbody is " + ea::to_string((long)(void*)ownBody_));
-		//URHO3D_LOGINFO("local position is " + position_.ToString());
-		//URHO3D_LOGINFO("");
 		 
         return worldFrameNoScale;
 
@@ -482,7 +473,7 @@ namespace Urho3D {
             if (!hasBeenBuilt_) {
                 //save the state of bodies and pins after the first build.
                 prevBuiltOwnWorldPinTransform_ = GetOwnBuildWorldFrame();
-                prevBuiltOwnBodyTransform_ = ownBody_->GetWorldTransform();
+                prevBuiltOwnBodyTransform_ = ownBodyResolved_->GetWorldTransform();
 
                 prevBuiltOtherWorldPinTransform_ = GetOtherBuildWorldFrame();
                 prevBuiltOtherBodyTransform_ = otherBodyResolved_->GetWorldTransform();
