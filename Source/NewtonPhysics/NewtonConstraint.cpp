@@ -472,14 +472,9 @@ namespace Urho3D {
 				//set body to pre-Built Transform
 				if (ownBody_ != ownBodyResolved_)
 				{
-					//URHO3D_LOGINFO("ownbodyswitch");
-					
-					//we have just switched to a new body - we need to adjust the resolved body to a position where the ownBody_ is at prevBuiltOwnBodyTransform.
+					//we have just switched to a new body - we need to adjust the resolved body to a position where the ownBody_ is at initialBuiltOwnBodyTransform_.
 					Matrix3x4 localSpaceToOld = initialBuiltOwnBodyTransform_.Inverse() * ownBodyResolved_->GetWorldTransform();
-					//URHO3D_LOGINFO("localSpaceToOld: " + localSpaceToOld.ToString());
 					ownBodyResolved_->SetWorldTransform(initialBuiltOwnBodyTransform_ * localSpaceToOld );
-
-					//URHO3D_LOGINFO(ea::to_string(ownBody_->GetWorldTransform().Equals(initialBuiltOwnBodyTransform_)));
 
 				}
 				else
@@ -489,8 +484,7 @@ namespace Urho3D {
 
 				if (otherBody_ != otherBodyResolved_)
 				{
-					//URHO3D_LOGINFO("otherbodyswitch");
-					//we have just switched to a new body - we need to adjust the resolved body to a position where the prev resolved body is at prevBuiltOwnBodyTransform.
+					//we have just switched to a new body - we need to adjust the resolved body to a position where the otherBody_ is at initialBuiltOtherBodyTransform_.
 					Matrix3x4 localSpaceToOld = initialBuiltOtherBodyTransform_.Inverse() * otherBodyResolved_->GetWorldTransform();
 					otherBodyResolved_->SetWorldTransform(initialBuiltOtherBodyTransform_ * localSpaceToOld);
 				}
@@ -558,8 +552,8 @@ namespace Urho3D {
 		for (NewtonRigidBody* rb : rigidBodies)
 		{
 			if (rb->IsEnabled()) {
-				if(rb != body)
-					URHO3D_LOGINFO("NewtonConstraint(" + ea::to_string((long)(void*)this) + "): body resolved from node name " + body->GetNode()->GetName() + " to node name " + rb->GetNode()->GetName());
+				//if(rb != body)
+					//URHO3D_LOGINFO("NewtonConstraint(" + ea::to_string((long)(void*)this) + "): body resolved from node name " + body->GetNode()->GetName() + " to node name " + rb->GetNode()->GetName());
 				
 				return rb;
 			}
