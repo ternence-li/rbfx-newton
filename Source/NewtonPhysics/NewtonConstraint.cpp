@@ -475,7 +475,7 @@ namespace Urho3D {
 					//URHO3D_LOGINFO("ownbodyswitch");
 					
 					//we have just switched to a new body - we need to adjust the resolved body to a position where the ownBody_ is at prevBuiltOwnBodyTransform.
-					Matrix3x4 localSpaceToOld = ownBody_->GetWorldTransform().Inverse() * ownBodyResolved_->GetWorldTransform();
+					Matrix3x4 localSpaceToOld = initialBuiltOwnBodyTransform_.Inverse() * ownBodyResolved_->GetWorldTransform();
 					//URHO3D_LOGINFO("localSpaceToOld: " + localSpaceToOld.ToString());
 					ownBodyResolved_->SetWorldTransform(initialBuiltOwnBodyTransform_ * localSpaceToOld );
 
@@ -491,7 +491,7 @@ namespace Urho3D {
 				{
 					//URHO3D_LOGINFO("otherbodyswitch");
 					//we have just switched to a new body - we need to adjust the resolved body to a position where the prev resolved body is at prevBuiltOwnBodyTransform.
-					Matrix3x4 localSpaceToOld = otherBody_->GetWorldTransform().Inverse() * otherBodyResolved_->GetWorldTransform();
+					Matrix3x4 localSpaceToOld = initialBuiltOtherBodyTransform_.Inverse() * otherBodyResolved_->GetWorldTransform();
 					otherBodyResolved_->SetWorldTransform(initialBuiltOtherBodyTransform_ * localSpaceToOld);
 				}
 				else
@@ -503,7 +503,7 @@ namespace Urho3D {
 
 			//its possible that the resolved bodies could be the same body, if so, continue without actually building.
 			if (ownBodyResolved_ != otherBodyResolved_) {
-				URHO3D_LOGINFO("building constraint");
+				//URHO3D_LOGINFO("building constraint");
 				buildConstraint();
 			}
 
