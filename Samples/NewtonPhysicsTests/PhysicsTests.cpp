@@ -1228,8 +1228,11 @@ void PhysicsTests::SpawnRejointingTest(Vector3 worldPosition)
 	reJointB->SetName("reJointB");
 
 
-	//NewtonFixedDistanceConstraint* constraint = reJointA->CreateComponent<NewtonFixedDistanceConstraint>();
-	
+	NewtonHingeConstraint* constraint = reJointA->CreateComponent<NewtonHingeConstraint>();
+	constraint->SetNoPowerSpringDamper(true);
+	constraint->SetRotation(Quaternion(90, Vector3(0, 1, 0)));
+
+
 	reJointRoot = scene_->CreateChild("reJointRoot");
 	reJointRoot->CreateComponent<NewtonRigidBody>();
 	reJointRoot->GetComponent<NewtonRigidBody>()->SetEnabled(false);

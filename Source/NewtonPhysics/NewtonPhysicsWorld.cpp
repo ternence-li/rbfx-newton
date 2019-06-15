@@ -763,8 +763,9 @@ namespace Urho3D {
         //rebuild contraints if they need rebuilt (dirty)
         for (NewtonConstraint* constraint : constraintList)
         {
-            if (constraint->dirty_)
-                constraint->reEvalConstraint();
+			if (constraint->GetDirty()) {
+				constraint->reEvalConstraint();
+			}
         }
 
 

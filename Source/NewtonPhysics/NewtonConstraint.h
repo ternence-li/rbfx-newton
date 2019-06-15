@@ -64,6 +64,8 @@ namespace Urho3D {
 
         void MarkDirty(bool dirty = true);
 
+		bool GetDirty() const { return dirty_; }
+
         /// Set whether to disable collisions between connected bodies.
         void SetDisableCollision(bool disable);
 
@@ -218,10 +220,12 @@ namespace Urho3D {
 
 
 
-        Matrix3x4 prevBuiltOwnBodyTransform_;
-        Matrix3x4 prevBuiltOtherBodyTransform_;
-        Matrix3x4 prevBuiltOwnWorldPinTransform_;
-        Matrix3x4 prevBuiltOtherWorldPinTransform_;
+        Matrix3x4 initialBuiltOwnBodyTransform_;
+        Matrix3x4 initialBuiltOtherBodyTransform_;
+        Matrix3x4 initialBuiltOwnWorldPinTransform_;
+        Matrix3x4 initialBuiltOtherWorldPinTransform_;
+		NewtonRigidBody* prevBuiltOwnBody_;
+		NewtonRigidBody* prevBuiltOtherBody_;
         bool hasBeenBuilt_ = false;
 
 
