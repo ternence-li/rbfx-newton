@@ -30,7 +30,6 @@ namespace Urho3D {
 
         rigidBodyComp->GetForceAndTorque(netForce, netTorque);
 
-
         Vector3 gravityForce;
         if (rigidBodyComp->GetScene())//on scene destruction sometimes this is null so check...
         {
@@ -136,6 +135,11 @@ namespace Urho3D {
 
         NewtonRigidBody* rigBody0 = static_cast<NewtonRigidBody*>(NewtonBodyGetUserData(body0));
         NewtonRigidBody* rigBody1 = static_cast<NewtonRigidBody*>(NewtonBodyGetUserData(body1));
+
+		if (!rigBody0 || !rigBody1) {
+			URHO3D_LOGINFO("Newton_ProcessContactsCallback missed due to rigBody null.");
+			return;
+		}
 
         if (!rigBody0->GetGenerateContacts() || !rigBody1->GetGenerateContacts())
             return;
@@ -262,6 +266,8 @@ namespace Urho3D {
         NewtonRigidBody* rigBody0 = static_cast<NewtonRigidBody*>(NewtonBodyGetUserData(body0));
         NewtonRigidBody* rigBody1 = static_cast<NewtonRigidBody*>(NewtonBodyGetUserData(body1));
 
+		if (!rigBody0 || !rigBody1)
+			return 0;
 
         NewtonPhysicsWorld* physicsWorld = rigBody0->GetPhysicsWorld();
 

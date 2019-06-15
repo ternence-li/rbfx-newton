@@ -353,7 +353,7 @@ namespace Urho3D
 	URHONEWTON_API void  GetNextChildRigidBodies(eastl::vector<NewtonRigidBody*>& rigidBodies, Node* node);
 	URHONEWTON_API void  GetAloneCollisionShapes(eastl::vector<NewtonCollisionShape*>& colShapes, Node* startingNode, bool includeStartingNodeShapes);
 
-	URHONEWTON_API void  CalculateRigidBodyGroupFusedVelocities(ea::vector<NewtonRigidBody*>& rigidBodies, Vector3& worldVelocity, Vector3& worldAngularVelocity);
+	URHONEWTON_API void  CalculateRigidBodyGroupFusedVelocities(ea::vector<NewtonRigidBody*>& rigidBodies, Matrix3x4 worldReferenceFrame, Vector3& worldVelocity, Vector3& worldAngularVelocity);
 
 
     URHONEWTON_API void  RebuildPhysicsNodeTree(Node* node);

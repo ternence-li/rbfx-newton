@@ -236,7 +236,8 @@ namespace Urho3D
         /// snap current interpolated values directly to target values.
         //void SnapInterpolation();
 
-
+		/// look at all rigid body children and use their momentums.
+		void ApplyMomentumFromRigidBodyChildren(bool clearChildrenVelocities);
 
         void SetUseGyroscopicTorque(bool enable);
         bool GetUseGyroscopicTorque() const { return enableGyroTorque_; }
@@ -479,6 +480,11 @@ namespace Urho3D
         //Vector3 interpolatedNodePos_;
         //Quaternion interpolatedNodeRotation_;
         //float interpolationFactor_ = 1.0f;
+
+
+		//cached states
+		Vector3 lastAngularVelocity_;
+		Vector3 lastLinearVelocity_;
 
 
         virtual void OnNodeSetEnabled(Node* node) override;

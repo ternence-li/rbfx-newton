@@ -399,8 +399,41 @@ namespace Urho3D {
     }
 
 
+	void NewtonRigidBody::ApplyMomentumFromRigidBodyChildren(bool clearChildrenVelocities)
+	{
+		//this routine could be better.
 
-    void NewtonRigidBody::SetUseGyroscopicTorque(bool enable)
+		ea::vector<Node*> childBodyNodes;
+		node_->GetChildrenWithComponent<NewtonRigidBody>(childBodyNodes, true);
+		ea::vector<NewtonRigidBody*> childBodies;
+		for (auto* nd : childBodyNodes) {
+			childBodies.push_back(nd->GetComponent<NewtonRigidBody>());
+		}
+
+		Vector3 angularVelocity;
+		Vector3 linearVelocity;
+
+		CalculateRigidBodyGroupFusedVelocities(childBodies, GetWorldTransform(), linearVelocity, angularVelocity);
+
+		//URHO3D_LOGINFO("angularVelocity: " + angularVelocity.ToString());
+		//URHO3D_LOGINFO("linearVelocity: " + linearVelocity.ToString());
+
+		SetLinearVelocity(linearVelocity, true);
+		SetAngularVelocity(angularVelocity*100.0f);
+
+
+		if (clearChildrenVelocities)
+		{
+			for (NewtonRigidBody* body : childBodies) {
+				body->SetAngularVelocity(Vector3::ZERO);
+				body->SetLinearVelocityHard(Vector3::ZERO);
+			}
+		}
+
+
+	}
+
+	void NewtonRigidBody::SetUseGyroscopicTorque(bool enable)
     {
         if (enableGyroTorque_ != enable)
         {
@@ -676,9 +709,12 @@ namespace Urho3D {
     {
         URHO3D_PROFILE_FUNCTION();
 
+
         //save existing velocities for restoration after the rebuild
         Vector3 oldLinearVelocity = GetLinearVelocity();
         Vector3 oldAngularVelocity = GetAngularVelocity();
+
+
 
 
         freeBody();
@@ -694,17 +730,6 @@ namespace Urho3D {
         ea::vector<NewtonCollisionShape*> enabledCollisionShapes;
         updateChildCollisionShapes(enabledCollisionShapes);
 
-
-		//find rigid bodies that are on child nodes to use for velocity inheritance.
-		ea::vector<Node*> childRigidBodyNodes;
-		node_->GetChildrenWithComponent<NewtonRigidBody>(childRigidBodyNodes, true);
-		ea::vector<NewtonRigidBody*> childRigidBodies;
-		for (Node* nd : childRigidBodyNodes) {
-			childRigidBodies.push_back(nd->GetComponent<NewtonRigidBody>());
-		}
-		Vector3 inheritedWorldVelocity;
-		Vector3 inheritedAngularVelocity;
-		CalculateRigidBodyGroupFusedVelocities(childRigidBodies, inheritedWorldVelocity, inheritedAngularVelocity);
 
 
 
@@ -893,8 +918,6 @@ namespace Urho3D {
                 NewtonBodySetCollision(newtonBody_, resolvedCollision);
 
 
-
-
                 mass_ = accumMass * massScale_;
                 if (sceneRootBodyMode_)
                     mass_ = 0;
@@ -948,6 +971,8 @@ namespace Urho3D {
         //URHO3D_LOGINFO("Final Inertia Matrix: " + String(inertiaMatrixUrho) + " Mass: " + String(mass_));
 
         NewtonBodySetFullMassMatrix(newtonBody_, mass_, &finalInertia[0][0]);
+		
+
         NewtonBodySetCentreOfMass(newtonBody_, &finalCenterOfMass[0]);
 
 
@@ -977,9 +1002,9 @@ namespace Urho3D {
         SetWorldTransformToNode();
         lastSetNodeWorldTransform_ = node_->GetWorldTransform();
 
-        //Restore velocities
-        SetLinearVelocityHard(oldLinearVelocity);
-        SetAngularVelocity(oldAngularVelocity);
+
+		SetLinearVelocityHard(oldLinearVelocity);
+		SetAngularVelocity(oldAngularVelocity);
     }
 
 
@@ -1286,54 +1311,65 @@ namespace Urho3D {
     }
 
     Urho3D::Vector3 NewtonRigidBody::GetLinearVelocity(TransformSpace space /*= TS_WORLD*/) const
-{
-        if (newtonBody_) {
+	{
+		Vector3 vel = Vector3::ZERO;
+		if (newtonBody_) {
 
-            dVector dVel;
-            NewtonBodyGetVelocity(newtonBody_, &dVel[0]);
-            Vector3 vel = (NewtonToUrhoVec3(dVel));
+			dVector dVel;
+			NewtonBodyGetVelocity(newtonBody_, &dVel[0]);
+			vel = (NewtonToUrhoVec3(dVel));
+		}
+		else
+		{
+			//use last set (cached) linear velocity.
+			vel = lastLinearVelocity_;
+		}
+		
+		if (space == TS_WORLD)
+		{
+			return vel;
+		}
+		else if (space == TS_LOCAL)
+		{
+			return node_->WorldToLocal(vel);
+		}
+		else if (space == TS_PARENT)
+		{
+			return node_->GetParent()->WorldToLocal(vel);
+		}
 
-            if (space == TS_WORLD)
-            {
-                return vel;
-            }
-            else if (space == TS_LOCAL)
-            {
-                return node_->WorldToLocal(vel);
-            }
-            else if (space == TS_PARENT)
-            {
-                return node_->GetParent()->WorldToLocal(vel);
-            }
+		return vel;
 
-            return vel;
-        }
-        else
-            return Vector3::ZERO;
     }
 
     Urho3D::Vector3 NewtonRigidBody::GetAngularVelocity(TransformSpace space /*= TS_WORLD*/) const
-    {
-        if (newtonBody_) {
-            dVector dAngularVel;
-            NewtonBodyGetOmega(newtonBody_, &dAngularVel[0]);
-            Vector3 angularVel = (NewtonToUrhoVec3(dAngularVel));
-            if (space == TS_WORLD)
-            {
-                return angularVel;
-            }
-            else if(space == TS_LOCAL)
-            {
-                return node_->WorldToLocal(angularVel);
-            }
-            else if (space == TS_PARENT)
-            {
-                return node_->GetParent()->WorldToLocal(angularVel);
-            }
-            return angularVel;
-        }
-        else
-            return Vector3::ZERO;
+    { 
+		Vector3 angularVel;
+		if (newtonBody_) {
+			dVector dAngularVel;
+			NewtonBodyGetOmega(newtonBody_, &dAngularVel[0]);
+			Vector3 angularVel = (NewtonToUrhoVec3(dAngularVel));
+		}
+		else
+		{
+			angularVel = lastAngularVelocity_;
+		}
+
+
+		if (space == TS_WORLD)
+		{
+			return angularVel;
+		}
+		else if (space == TS_LOCAL)
+		{
+			return node_->WorldToLocal(angularVel);
+		}
+		else if (space == TS_PARENT)
+		{
+			return node_->GetParent()->WorldToLocal(angularVel);
+		}
+		return angularVel;
+
     }
 
 

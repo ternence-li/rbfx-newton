@@ -1228,7 +1228,7 @@ void PhysicsTests::SpawnRejointingTest(Vector3 worldPosition)
 	reJointB->SetName("reJointB");
 
 
-	NewtonFixedDistanceConstraint* constraint = reJointA->CreateComponent<NewtonFixedDistanceConstraint>();
+	//NewtonFixedDistanceConstraint* constraint = reJointA->CreateComponent<NewtonFixedDistanceConstraint>();
 	
 	reJointRoot = scene_->CreateChild("reJointRoot");
 	reJointRoot->CreateComponent<NewtonRigidBody>();
@@ -1576,6 +1576,12 @@ void PhysicsTests::ToggleRejointTest()
 	reJointA->GetComponent<NewtonRigidBody>()->SetEnabled(curEnabled);
 	reJointB->GetComponent<NewtonRigidBody>()->SetEnabled(curEnabled);
 	reJointRoot->GetComponent<NewtonRigidBody>()->SetEnabled(!curEnabled);
+
+	if (!curEnabled)
+	{
+		reJointRoot->GetComponent<NewtonRigidBody>()->ApplyMomentumFromRigidBodyChildren(true);
+	}
+
 }
 
 void PhysicsTests::CreatePickTargetNodeOnPhysics()

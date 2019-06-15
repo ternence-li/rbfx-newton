@@ -588,10 +588,8 @@ namespace Urho3D {
 	   if (timeStep <= M_EPSILON)
 		   timeStep = timeStepTarget_;
 
-
+	   //timeStepTarget_ for impulse calculates etc.. 
        timeStepTarget_ = timeStep;
-
-       //URHO3D_LOGINFO(String(timeStep));
 
 
        //do the update.
@@ -669,9 +667,6 @@ namespace Urho3D {
             if (rigBody->node_->GetWorldTransform() != rigBody->lastSetNodeWorldTransform_ && (rigBody->connectedConstraints_.size() == 0)) {
 
 
-
-
-
                 rigBody->SetWorldTransformToNode();
                 rigBody->MarkInternalTransformDirty(true);
 
@@ -698,6 +693,10 @@ namespace Urho3D {
                 NewtonWorldForEachBodyInAABBDo(newtonWorld_, &p0[0], &p1[0], Newton_WakeBodiesInAABBCallback, nullptr);
             }
 
+			//save cached variables
+			rigBody->lastLinearVelocity_ = rigBody->GetLinearVelocity(TS_WORLD);
+			rigBody->lastAngularVelocity_ = rigBody->GetAngularVelocity(TS_WORLD);
+
             //apply the transform of all rigid body components to their respective nodes.
             if (rigBody->GetInternalTransformDirty()) {
 
@@ -706,6 +705,8 @@ namespace Urho3D {
                 //if (rigBody->InterpolationWithinRestTolerance())
                 rigBody->MarkInternalTransformDirty(false);
             }
+
+		
         }
 
 
@@ -924,23 +925,31 @@ namespace Urho3D {
     }
 
 
-	//given a group of rigid bodies, calculates an approximate overall velocity if the bodies were to be instantly fused together. (conservation of momentum)
-	void CalculateRigidBodyGroupFusedVelocities(ea::vector<NewtonRigidBody*>& rigidBodies, Vector3& worldVelocity, Vector3& worldAngularVelocity)
+	//given a group of rigid bodies, calculates an approximate overall velocity if the bodies were to be instantly fused together about a reference frame. (conservation of momentum)
+	void CalculateRigidBodyGroupFusedVelocities(ea::vector<NewtonRigidBody*>& rigidBodies, Matrix3x4 worldReferenceFrame, Vector3& worldVelocity, Vector3& worldAngularVelocity)
 	{
-		//Vector3 totalLinearMomentum = Vector3::ZERO;
-		//Vector3 totalAngularMomentum = Vector3::ZERO;
 
-		//float totalMass = 0.0f;
-		//for (NewtonRigidBody* body : rigidBodies) {
+		//note we are currently not taking into account the local rotational velocities of each body.  
+		//Only the linear velocities of each body converted into angular and linear velocities on the final group.
 
-		//	totalLinearMomentum += body->GetLinearVelocity() * body->GetEffectiveMass();
+		Vector3 averageWorldVelocity = Vector3::ZERO;
+		Vector3 averageWorldAngVelocity = Vector3::ZERO;
 
-		//	totalAngularMomentum += body->GetAngularMomentum();
-		//	totalMass += body->GetEffectiveMass();
-		//}
+		float totalMass = 0.0f;
+		for (NewtonRigidBody* body : rigidBodies)
+		{
+			totalMass += body->GetEffectiveMass();
+			URHO3D_LOGINFO(body->GetLinearVelocity(TS_WORLD).ToString());
 
-		//worldVelocity = totalLinearMomentum / totalMass;
-		//worldAngularVelocity = totalAngularMomentum
+			Vector3 displacement = body->GetWorldPosition() - worldReferenceFrame.Translation();
+			Vector3 angularAboutOrigin = body->GetLinearVelocity(TS_WORLD).CrossProduct(displacement) / displacement.LengthSquared();
+
+			averageWorldAngVelocity += (angularAboutOrigin )*body->GetEffectiveMass();
+			averageWorldVelocity += body->GetLinearVelocity(TS_WORLD)*body->GetEffectiveMass();
+		}
+
+		worldVelocity = averageWorldVelocity/totalMass;
+		worldAngularVelocity = -1.0f*averageWorldAngVelocity/totalMass;
 	}
 
 	void RebuildPhysicsNodeTree(Node* node)
