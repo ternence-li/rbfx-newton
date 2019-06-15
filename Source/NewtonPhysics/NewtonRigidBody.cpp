@@ -695,6 +695,20 @@ namespace Urho3D {
         updateChildCollisionShapes(enabledCollisionShapes);
 
 
+		//find rigid bodies that are on child nodes to use for velocity inheritance.
+		ea::vector<Node*> childRigidBodyNodes;
+		node_->GetChildrenWithComponent<NewtonRigidBody>(childRigidBodyNodes, true);
+		ea::vector<NewtonRigidBody*> childRigidBodies;
+		for (Node* nd : childRigidBodyNodes) {
+			childRigidBodies.push_back(nd->GetComponent<NewtonRigidBody>());
+		}
+		Vector3 inheritedWorldVelocity;
+		Vector3 inheritedAngularVelocity;
+		CalculateRigidBodyGroupFusedVelocities(childRigidBodies, inheritedWorldVelocity, inheritedAngularVelocity);
+
+
+
+
         ///determine early on if a compound is going to be needed.
         bool compoundNeeded = false;
         float smallestDensity = M_LARGE_VALUE;
