@@ -318,7 +318,13 @@ namespace Urho3D
         int GetSceneDepth() { return sceneDepth_; }
 
         /// Draw Debug geometry
-        void DrawDebugGeometry(DebugRenderer* debug, bool depthTest, bool showAABB = true, bool showCollisionMesh = true, bool showCenterOfMass = true, bool showContactForces = true);
+        void DrawDebugGeometry(DebugRenderer* debug, 
+			bool depthTest, 
+			bool showAABB = true, 
+			bool showCollisionMesh = true, 
+			bool showCenterOfMass = true,
+			bool showContactForces = true, 
+			bool showBodyFrame = true);
 
         /// mark the rigid body as dirty causing the newton rigid body to be rebuilt by the physics world
         void MarkDirty(bool dirty = true);

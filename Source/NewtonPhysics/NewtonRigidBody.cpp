@@ -525,7 +525,7 @@ namespace Urho3D {
 
     }
 
-    void NewtonRigidBody::DrawDebugGeometry(DebugRenderer* debug, bool depthTest, bool showAABB /*= true*/, bool showCollisionMesh /*= true*/, bool showCenterOfMass /*= true*/, bool showContactForces /*= true*/)
+    void NewtonRigidBody::DrawDebugGeometry(DebugRenderer* debug, bool depthTest, bool showAABB /*= true*/, bool showCollisionMesh /*= true*/, bool showCenterOfMass /*= true*/, bool showContactForces /*= true*/, bool showBodyFrame /*= true*/)
     {
         Component::DrawDebugGeometry(debug, depthTest);
         if (newtonBody_ && GetEffectiveNewtonCollision()) {
@@ -575,10 +575,13 @@ namespace Urho3D {
 
                 dVector z(o + matrix.RotateVector(dVector(0.0f, 0.0f, 1.0f, 0.0f))*aabbSize);
                 debug->AddLine((Vector3((o.m_x), (o.m_y), (o.m_z))), (Vector3((z.m_x), (z.m_y), (z.m_z))), Color::BLUE, depthTest);
-
-
-
             }
+			if (showBodyFrame)
+			{
+				dMatrix matrix;
+				NewtonBodyGetMatrix(newtonBody_, &matrix[0][0]);
+				debug->AddFrame(Matrix3x4(NewtonToUrhoMat4(matrix)), 1.0f, Color::RED, Color::GREEN, Color::BLUE, depthTest);
+			}
             if (showContactForces)
             {
 
