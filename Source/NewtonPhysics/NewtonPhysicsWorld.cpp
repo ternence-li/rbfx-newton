@@ -667,7 +667,7 @@ namespace Urho3D {
             if (rigBody->node_->GetWorldTransform() != rigBody->lastSetNodeWorldTransform_ && (rigBody->connectedConstraints_.size() == 0)) {
 
 
-                rigBody->SetWorldTransformToNode();
+                rigBody->SetWorldBodyFrameTransformToNode();
                 rigBody->MarkInternalTransformDirty(true);
 
                 if (rigBody->isKinematic_) {
@@ -747,11 +747,6 @@ namespace Urho3D {
         {
             if (!rigBody->GetDirty())
                 continue;
-
-            //mark all connected constraints as needing rebuilt.
-            for (NewtonConstraint* constraint : rigBody->connectedConstraints_) {
-                constraint->MarkDirty(true);
-            }
 
             rigBody->reBuildBody();
 
@@ -940,7 +935,7 @@ namespace Urho3D {
 		for (NewtonRigidBody* body : rigidBodies)
 		{
 			totalMass += body->GetEffectiveMass();
-			URHO3D_LOGINFO(body->GetLinearVelocity(TS_WORLD).ToString());
+			//URHO3D_LOGINFO(body->GetLinearVelocity(TS_WORLD).ToString());
 
 			Vector3 displacement = body->GetWorldPosition() - worldReferenceFrame.Translation();
 			Vector3 angularAboutOrigin = body->GetLinearVelocity(TS_WORLD).CrossProduct(displacement) / displacement.LengthSquared();

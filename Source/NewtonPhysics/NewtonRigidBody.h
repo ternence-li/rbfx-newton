@@ -95,25 +95,25 @@ namespace Urho3D
 
         NewtonPhysicsWorld* GetPhysicsWorld() const { return physicsWorld_; }
 
-        ///  Set the world transform of the body to the transform of the node.
-        void SetWorldTransformToNode();
+        ///  Set the world transform of the body's reference frame to the transform of the node.
+        void SetWorldBodyFrameTransformToNode();
 
-        ///  Set the world transform of the body in scene space
+        ///  Set the world transform of the body in scene space (center of mass)
         void SetWorldTransform(const Matrix3x4& transform);
-
         void SetWorldPosition(const Vector3& position);
-
         void SetWorldRotation(const Quaternion& quaternion);
 
         
-        /// returns the body transform 
+        /// returns the body transform (center of mass)
         Matrix3x4 GetWorldTransform();
         Vector3 GetWorldPosition();
         Quaternion GetWorldRotation();
 
-        /// returns the position of the bodies center of mass in scene space or physics world space.
-        Vector3 GetCenterOfMassPosition(bool scaledPhysicsWorldFrame = false);
-        Matrix3x4 GetCenterOfMassTransform(bool scaledPhysicsWorldFrame = false);
+		/// center of mass
+		void SetCenterOfMassLocalOffset(const Vector3& offset);
+		Vector3 GetCenterOfMassLocalOffset() const { return centerOfMassEffective_; }
+		void ResetCenterOfMass();
+
         
         ///Get the mass scale of the rigid body
         float GetMassScale() const { return massScale_; }
@@ -390,6 +390,12 @@ namespace Urho3D
         ///currently connected constraints.
         ea::hash_set<WeakPtr<NewtonConstraint>> connectedConstraints_;
 
+		///the current center of mass
+		Vector3 centerOfMassEffective_;
+		Vector3 centerOfMassCalculated_;
+
+		Vector3 localCOMOffsetOverride_;
+		bool useCOMOffsetOverride_ = false;
 
 
         dVector netForceNewton_;
@@ -501,6 +507,15 @@ namespace Urho3D
 
         virtual void OnMarkedDirty(Node* node) override;
     
+
+
+		///set the world transform of a newtonbody's COM
+		void SetBodyWorldMatrixFromCOMWorldMatrix(Matrix3x4 worldTransform);
+
+		///get the world transform of a newtonbody's COM
+		Matrix3x4 GetBodyWorldCOMMatrix();
+
+
     };
 
 

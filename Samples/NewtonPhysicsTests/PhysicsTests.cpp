@@ -145,7 +145,10 @@ void PhysicsTests::CreateScene()
 
     CreateScenery(Vector3(0,0,0));
 
-    //SpawnSamplePhysicsCylinder(scene_, Vector3(-5, 2, 0));
+	Node* cylinder = SpawnSamplePhysicsCylinder(scene_, Vector3(-5, 2, 0));
+	cylinder->SetName("cylinder1");
+	cylinder->GetComponent<NewtonRigidBody>()->SetCenterOfMassLocalOffset(Vector3(5, 0, 0));
+
     //SpawnSamplePhysicsCylinder(scene_, Vector3(5, 2, 0), 0.25f,4);
 
 
@@ -183,10 +186,10 @@ void PhysicsTests::CreateScene()
 
     //SpawnCompoundedRectTest(Vector3(20, 10, 10));
 
-	SpawnRejointingTest(Vector3(0, 10, 0));
+	//SpawnRejointingTest(Vector3(0, 10, 0));
 
     ////////create scale test
-    //SpawnSceneCompoundTest(Vector3(-20, 10, 20), true);
+    SpawnSceneCompoundTest(Vector3(-20, 10, 20), true);
     //SpawnSceneCompoundTest(Vector3(-20, 10, 30), false); //this was gives newton a non-orthogonal matrix.
 
     //CreateTowerOfLiar(Vector3(40, 0, 20));
@@ -453,6 +456,10 @@ void PhysicsTests::MoveCamera(float timeStep)
 
 	}
 
+	if (input->GetKeyPress(KEY_5))
+	{
+		scene_->GetChild("cylinder1")->SetWorldPosition(Vector3(10, 10, 0));
+	}
 
 
 }
@@ -461,10 +468,9 @@ void PhysicsTests::MoveCamera(float timeStep)
 
 void PhysicsTests::SpawnSceneCompoundTest(const Vector3& worldPos, bool oneBody)
 {
-    Node* root = scene_->CreateChild();
-    root->SetPosition(worldPos);
-    const int levelCount = 10;
+	Node* root = scene_->CreateChild("SpawnSceneCompoundTestRoot");
     const int breadth = 2;
+	const int levelCount = 10;
     Node* curNode = root;
 
 

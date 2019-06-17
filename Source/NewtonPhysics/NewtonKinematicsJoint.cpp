@@ -84,19 +84,13 @@ namespace Urho3D {
 
     void NewtonKinematicsControllerConstraint::SetOtherPosition(const Vector3& position)
     {
-        bool curDirty = dirty_;
-        NewtonConstraint::SetOtherPosition(position);
-        //resume dirty flag because otherPosition_ is used for target frame and not for rebuilding
-        MarkDirty(curDirty);
+		otherPosition_ = position;
 
     }
 
     void NewtonKinematicsControllerConstraint::SetOtherRotation(const Quaternion& rotation)
     {
-        bool curDirty = dirty_;
-        NewtonConstraint::SetOtherRotation(rotation);
-        //resume dirty because otherRotation_ is used for target frame and not for rebuilding
-        MarkDirty(curDirty);
+		otherRotation_ = rotation;
     }
 
   
