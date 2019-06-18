@@ -114,20 +114,12 @@ namespace Urho3D {
     }
    
 
-    void NewtonRigidBody::SetWorldBodyFrameTransformToNode()
-    {
+    void NewtonRigidBody::SetWorldTransformToNode()
+{
 		if (!newtonBody_)
 			return;
 
-		Matrix3x4 COMTransform = GetWorldTransform();
-		dMatrix framet;
-		NewtonBodyGetMatrix(newtonBody_, &framet[0][0]);
-		Matrix3x4 FrameTransform = Matrix3x4(NewtonToUrhoMat4(framet));
-
-		Matrix3x4 local = FrameTransform.Inverse() * COMTransform;
-
-		//set com 
-        SetWorldTransform(  node_->GetWorldTransform()  * local);
+        SetWorldTransform(  node_->GetWorldTransform() );
     }
 
     void NewtonRigidBody::SetWorldTransform(const Matrix3x4& transform)
@@ -138,7 +130,7 @@ namespace Urho3D {
 
             Matrix3x4 scaleLessTransform((transform.Translation()), transform.Rotation(), 1.0f);
            
-			SetBodyWorldMatrixFromCOMWorldMatrix(scaleLessTransform);
+			NewtonBodySetMatrix(newtonBody_, &UrhoToNewton(scaleLessTransform)[0][0]);
         }
         else
         {
@@ -158,7 +150,7 @@ namespace Urho3D {
 
             Matrix3x4 transform((position), NewtonToUrhoQuat(orientation), 1.0f);
 
-			SetBodyWorldMatrixFromCOMWorldMatrix( transform);
+			NewtonBodySetMatrix(newtonBody_, &UrhoToNewton(transform)[0][0]);
         }
         else
         {
@@ -176,11 +168,14 @@ namespace Urho3D {
         
 		
 			Activate();
-			Matrix3x4 comMatrix = GetBodyWorldCOMMatrix();
-            Matrix3x4 transform(comMatrix.Translation(), quaternion, 1.0f);
+
+			dMatrix matrix;
+			NewtonBodyGetMatrix(newtonBody_, &matrix[0][0]);
+
+			Matrix3x4 bodyMatrix = Matrix3x4(NewtonToUrhoMat4(matrix));
+            Matrix3x4 transform(bodyMatrix.Translation(), quaternion, 1.0f);
         
-			SetBodyWorldMatrixFromCOMWorldMatrix( transform);
-		
+			NewtonBodySetMatrix(newtonBody_, &UrhoToNewton(transform)[0][0]);
 		
 		
 		}
@@ -194,10 +189,10 @@ namespace Urho3D {
 
     Urho3D::Matrix3x4 NewtonRigidBody::GetWorldTransform()
     {
-
-		
         if (newtonBody_ && !physicsWorld_->isUpdating_) {
-			return GetBodyWorldCOMMatrix();
+			dMatrix matrix;
+			NewtonBodyGetMatrix(newtonBody_, &matrix[0][0]);
+			return Matrix3x4(NewtonToUrhoMat4(matrix));
 		}
         else {
 			
@@ -207,7 +202,8 @@ namespace Urho3D {
 				
                 return nextTransform_;
             }
-            Matrix3x4 transform = node_->GetWorldTransform() * Matrix3x4(centerOfMassEffective_, Quaternion::IDENTITY, 1.0f);
+			
+            Matrix3x4 transform = node_->GetWorldTransform();
             if (nextPositionNeeded_)
             {
 				
@@ -229,7 +225,9 @@ namespace Urho3D {
 {
         if (newtonBody_ && !physicsWorld_->isUpdating_) {
             
-			return GetBodyWorldCOMMatrix().Translation();
+			dMatrix matrix;
+			NewtonBodyGetMatrix(newtonBody_, &matrix[0][0]);
+			return Matrix3x4(NewtonToUrhoMat4(matrix)).Translation();
 
         }
         else {
@@ -245,14 +243,16 @@ namespace Urho3D {
                 return nextPosition_;
             }
            
-            return (node_->GetWorldTransform() * Matrix3x4(centerOfMassEffective_, Quaternion::IDENTITY, 1.0f)).Translation();
+            return (node_->GetWorldTransform()).Translation();
         }
     }
     
     Urho3D::Quaternion NewtonRigidBody::GetWorldRotation()
 { 
         if(newtonBody_ && !physicsWorld_->isUpdating_){
-			return GetBodyWorldCOMMatrix().Rotation();
+			dMatrix matrix;
+			NewtonBodyGetMatrix(newtonBody_, &matrix[0][0]);
+			return Matrix3x4(NewtonToUrhoMat4(matrix)).Rotation();
         }
         else {
             //return the last transform altered by any recent calls to set transform etc..
@@ -265,7 +265,7 @@ namespace Urho3D {
                 return nextOrientation_;
             }
 
-            return (node_->GetWorldTransform() * Matrix3x4(centerOfMassEffective_, Quaternion::IDENTITY, 1.0f)).Rotation();
+            return (node_->GetWorldTransform()).Rotation();
         }
     }
     
@@ -292,6 +292,7 @@ namespace Urho3D {
 		else
 			MarkDirty(true);
 	}
+
 
 
 	Urho3D::Vector3 NewtonRigidBody::GetAngularMomentum() const
@@ -944,6 +945,8 @@ namespace Urho3D {
                        // URHO3D_LOGINFO("Final Inertia Matrix: " + String(NewtonToUrhoMat4(finalInertia)) + " Mass: " + String(mass_) + " Volume: " + String(vol));
                     }
                     NewtonBodyGetCentreOfMass(newtonBody_, &finalCenterOfMass[0]);
+
+
                 }
             }
         }
@@ -955,6 +958,12 @@ namespace Urho3D {
 
         NewtonBodySetFullMassMatrix(newtonBody_, mass_, &finalInertia[0][0]);
 		
+		
+		//if we are building the scene body - set the COM to (0,0,0)
+		if (GetIsSceneRootBody()) {
+			
+			finalCenterOfMass = dVector(0, 0, 0);
+		}
 
 		//always keep reference to the calculated COM
 		centerOfMassCalculated_ = NewtonToUrhoVec3(finalCenterOfMass);
@@ -963,11 +972,14 @@ namespace Urho3D {
 		if (useCOMOffsetOverride_)
 			finalCenterOfMass = UrhoToNewton(localCOMOffsetOverride_);
 
+		
+
 		centerOfMassEffective_ = NewtonToUrhoVec3(finalCenterOfMass);
 
+
+
 		NewtonBodySetCentreOfMass(newtonBody_, &UrhoToNewton(centerOfMassEffective_)[0]);
-
-
+		
         NewtonBodySetMaterialGroupID(newtonBody_, 0);
 
         NewtonBodySetUserData(newtonBody_, (void*)this);
@@ -995,7 +1007,7 @@ namespace Urho3D {
 
 
         //finally move the body.
-        SetWorldBodyFrameTransformToNode();
+        SetWorldTransformToNode();
         lastSetNodeWorldTransform_ = node_->GetWorldTransform();
 
 
@@ -1452,33 +1464,8 @@ namespace Urho3D {
         
     }
 
-	void NewtonRigidBody::SetBodyWorldMatrixFromCOMWorldMatrix( Matrix3x4 worldTransform)
-	{
-		if (newtonBody_) {
-			dMatrix bodyMatrix;
-			NewtonBodyGetMatrix(newtonBody_, &bodyMatrix[0][0]);
 
 
-			Matrix3x4 local = GetBodyWorldCOMMatrix().Inverse() * Matrix3x4(NewtonToUrhoMat4(bodyMatrix));
-			Matrix3x4 NewBodyFrameWorldTransform = worldTransform * local;
-
-
-
-			NewtonBodySetMatrix(newtonBody_, &UrhoToNewton(NewBodyFrameWorldTransform)[0][0]);
-		}
-	}
-
-	Urho3D::Matrix3x4 NewtonRigidBody::GetBodyWorldCOMMatrix()
-	{
-		if (newtonBody_) {
-			dMatrix bodyMatrix;
-			NewtonBodyGetMatrix(newtonBody_, &bodyMatrix[0][0]);
-
-			dVector bodyLocalCOM;
-			NewtonBodyGetCentreOfMass(newtonBody_, &bodyLocalCOM[0]);
-
-			return Matrix3x4(NewtonToUrhoMat4(bodyMatrix)) * Matrix3x4(NewtonToUrhoVec3(bodyLocalCOM), Quaternion::IDENTITY, 1.0f);
-		}
-	}
+	
 
 }

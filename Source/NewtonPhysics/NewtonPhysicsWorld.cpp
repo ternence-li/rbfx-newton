@@ -667,7 +667,7 @@ namespace Urho3D {
             if (rigBody->node_->GetWorldTransform() != rigBody->lastSetNodeWorldTransform_ && (rigBody->connectedConstraints_.size() == 0)) {
 
 
-                rigBody->SetWorldBodyFrameTransformToNode();
+                rigBody->SetWorldTransformToNode();
                 rigBody->MarkInternalTransformDirty(true);
 
                 if (rigBody->isKinematic_) {

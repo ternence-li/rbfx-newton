@@ -96,9 +96,9 @@ namespace Urho3D
         NewtonPhysicsWorld* GetPhysicsWorld() const { return physicsWorld_; }
 
         ///  Set the world transform of the body's reference frame to the transform of the node.
-        void SetWorldBodyFrameTransformToNode();
+        void SetWorldTransformToNode();
 
-        ///  Set the world transform of the body in scene space (center of mass)
+        ///  Set the world transform of the body in scene space
         void SetWorldTransform(const Matrix3x4& transform);
         void SetWorldPosition(const Vector3& position);
         void SetWorldRotation(const Quaternion& quaternion);
@@ -114,7 +114,7 @@ namespace Urho3D
 		Vector3 GetCenterOfMassLocalOffset() const { return centerOfMassEffective_; }
 		void ResetCenterOfMass();
 
-        
+
         ///Get the mass scale of the rigid body
         float GetMassScale() const { return massScale_; }
 
@@ -508,12 +508,6 @@ namespace Urho3D
         virtual void OnMarkedDirty(Node* node) override;
     
 
-
-		///set the world transform of a newtonbody's COM
-		void SetBodyWorldMatrixFromCOMWorldMatrix(Matrix3x4 worldTransform);
-
-		///get the world transform of a newtonbody's COM
-		Matrix3x4 GetBodyWorldCOMMatrix();
 
 
     };

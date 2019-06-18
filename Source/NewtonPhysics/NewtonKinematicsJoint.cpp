@@ -85,12 +85,12 @@ namespace Urho3D {
     void NewtonKinematicsControllerConstraint::SetOtherPosition(const Vector3& position)
     {
 		otherPosition_ = position;
-
     }
 
     void NewtonKinematicsControllerConstraint::SetOtherRotation(const Quaternion& rotation)
     {
 		otherRotation_ = rotation;
+
     }
 
   
