@@ -112,6 +112,7 @@ namespace Urho3D
 		/// center of mass
 		void SetCenterOfMassLocalOffset(const Vector3& offset);
 		Vector3 GetCenterOfMassLocalOffset() const { return centerOfMassEffective_; }
+		Matrix3x4 GetCOMWorldTransform();
 		void ResetCenterOfMass();
 
 
@@ -203,7 +204,7 @@ namespace Urho3D
         void SetLinearVelocityHard(const Vector3& worldVelocity);
 
 
-        /// Set the Angular velocity in world cordinates (degrees/sec)
+        /// Set the Angular velocity in world cordinates (degrees/sec) about COM
         void SetAngularVelocity(const Vector3& angularVelocity);
 
 

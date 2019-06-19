@@ -948,6 +948,20 @@ namespace Urho3D {
 		worldAngularVelocity = -1.0f*averageWorldAngVelocity/totalMass;
 	}
 
+	URHONEWTON_API Matrix3 MoveInertiaMatrix(Matrix3 matrix, const float mass, const Vector3& delta)
+	{
+		//URHO3D_LOGINFO(ea::to_string(matrix.m00_) + "," + ea::to_string(matrix.m11_) + "," + ea::to_string(matrix.m22_));
+
+		float Ixx = matrix.m00_ - mass * (delta.y_*delta.y_ + delta.z_*delta.z_);
+		float Iyy = matrix.m11_ - mass * (delta.x_*delta.x_ + delta.z_*delta.z_);
+		float Izz = matrix.m22_ - mass * (delta.x_*delta.x_ + delta.y_*delta.y_);
+		Matrix3 newMatrix;
+		newMatrix.m00_ = Ixx;
+		newMatrix.m11_ = Iyy;
+		newMatrix.m22_ = Izz;
+		return newMatrix;
+	}
+
 	void RebuildPhysicsNodeTree(Node* node)
     {
         //trigger a rebuild on the root of the new tree.

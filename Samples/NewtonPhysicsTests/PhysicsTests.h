@@ -118,7 +118,7 @@ private:
     void SpawnHingeSpringTest(const Vector3 ZERO, const Quaternion IDENTITY);
     void SpawnKinematicBodyTest(Vector3 worldPosition, Quaternion worldRotation);
 	void SpawnRejointingTest(Vector3 worldPosition);
-
+	void SpawnCollisionOffsetTest(Vector3 worldPosition);
 
 
     /// Handle the logic update event.

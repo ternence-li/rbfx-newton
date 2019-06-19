@@ -54,6 +54,23 @@ namespace Urho3D {
         return dMatrix(data);
 #endif
     }
+	dMatrix UrhoToNewton(const Matrix3& mat3)
+	{
+#ifndef _NEWTON_USE_DOUBLE
+		Matrix4 asMat4 = Matrix4(mat3);
+		return dMatrix(asMat4.Transpose().Data());
+#else
+		Matrix4 tranposed = Matrix4(mat3).Transpose();
+		const float* dataPtr = tranposed.Data();
+		dFloat data[16];
+
+		for (int i = 0; i < 16; i++)
+			data[i] = dataPtr[i];
+
+
+		return dMatrix(data);
+#endif
+	}
 
     dVector UrhoToNewton(const Vector4& vec4)
     {

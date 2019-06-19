@@ -12,6 +12,7 @@ class NewtonWorld;
 namespace Urho3D {
     class Matrix4;
     class Matrix3x4;
+	class Matrix3;
     class Vector2;
     class Vector3;
     class Vector4;
@@ -22,6 +23,7 @@ namespace Urho3D {
     ///Conversion Functions From Urho To Newton
     dMatrix UrhoToNewton(const Matrix4& mat);
     dMatrix UrhoToNewton(const Matrix3x4& mat);
+	dMatrix UrhoToNewton(const Matrix3& mat3);
     dVector UrhoToNewton(const Vector3& vec4);
     dVector UrhoToNewton(const Vector3& vec3);
     dVector UrhoToNewton(const Vector2& vec2);

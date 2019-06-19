@@ -145,9 +145,9 @@ void PhysicsTests::CreateScene()
 
     CreateScenery(Vector3(0,0,0));
 
-	Node* cylinder = SpawnSamplePhysicsCylinder(scene_, Vector3(-5, 2, 0));
-	cylinder->SetName("cylinder1");
-	cylinder->GetComponent<NewtonRigidBody>()->SetCenterOfMassLocalOffset(Vector3(5, 0, 0));
+	//Node* cylinder = SpawnSamplePhysicsCylinder(scene_, Vector3(-5, 2, 0));
+	//cylinder->SetName("cylinder1");
+	//cylinder->GetComponent<NewtonRigidBody>()->SetCenterOfMassLocalOffset(Vector3(5, 0, 0));
 
     //SpawnSamplePhysicsCylinder(scene_, Vector3(5, 2, 0), 0.25f,4);
 
@@ -193,6 +193,8 @@ void PhysicsTests::CreateScene()
     //SpawnSceneCompoundTest(Vector3(-20, 10, 30), false); //this was gives newton a non-orthogonal matrix.
 
     //CreateTowerOfLiar(Vector3(40, 0, 20));
+
+	SpawnCollisionOffsetTest(Vector3(0, 0, 0));
 
     //
 
@@ -1245,6 +1247,24 @@ void PhysicsTests::SpawnRejointingTest(Vector3 worldPosition)
 
 	reJointA->SetParent(reJointRoot);
 	reJointB->SetParent(reJointRoot);
+}
+
+
+
+
+
+
+void PhysicsTests::SpawnCollisionOffsetTest(Vector3 worldPosition)
+{
+	
+	Node* boxA = SpawnSamplePhysicsBox(scene_, worldPosition + Vector3(-1,0,0), Vector3::ONE);
+	Node* boxB = SpawnSamplePhysicsBox(scene_, worldPosition + Vector3( 1,0,0 ), Vector3::ONE);
+
+	//alter boxB so its collision is offset by a large amount.
+	boxB->GetDerivedComponent<NewtonCollisionShape>()->SetPositionOffset(Vector3(0,10, 10));
+
+
+
 }
 
 

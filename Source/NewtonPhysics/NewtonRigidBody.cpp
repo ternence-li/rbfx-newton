@@ -276,10 +276,25 @@ namespace Urho3D {
 
 		if (newtonBody_ && !physicsWorld_->isUpdating_) {
 			NewtonBodySetCentreOfMass(newtonBody_, &UrhoToNewton(localCOMOffsetOverride_)[0]);
+			centerOfMassEffective_ = localCOMOffsetOverride_;
 		}
 		else
 			MarkDirty(true);
 		
+	}
+
+	Urho3D::Matrix3x4 NewtonRigidBody::GetCOMWorldTransform()
+	{
+		if (newtonBody_) {
+			dVector actualCOM;
+			NewtonBodyGetCentreOfMass(newtonBody_, &actualCOM[0]);
+			if (NewtonToUrhoVec3(actualCOM) != centerOfMassEffective_) {
+				URHO3D_LOGERROR("center of mass disagreement!");
+				URHO3D_LOGERROR(NewtonToUrhoVec3(actualCOM).ToString() + " vs " + centerOfMassEffective_.ToString());
+			}
+		}
+
+		return GetWorldTransform() * Matrix3x4(centerOfMassEffective_, Quaternion::IDENTITY, 1.0f);
 	}
 
 	void NewtonRigidBody::ResetCenterOfMass()
@@ -553,13 +568,14 @@ namespace Urho3D {
             if (showCenterOfMass) {
 
 
-				debug->AddFrame(GetWorldTransform(), 1.0f, Color::RED, Color::GREEN, Color::BLUE, depthTest);
+				debug->AddFrame(GetCOMWorldTransform(), 1.2f, Color::MAGENTA, Color::YELLOW, Color::CYAN, depthTest);
             }
 			if (showBodyFrame)
 			{
 				dMatrix matrix;
 				NewtonBodyGetMatrix(newtonBody_, &matrix[0][0]);
-				debug->AddFrame(Matrix3x4(NewtonToUrhoMat4(matrix)), 1.0f, Color::MAGENTA, Color::YELLOW, Color::CYAN, depthTest);
+				debug->AddFrame(Matrix3x4(NewtonToUrhoMat4(matrix)), 1.0f, Color::RED, Color::GREEN, Color::BLUE, depthTest);
+
 			}
             if (showContactForces)
             {
@@ -834,7 +850,7 @@ namespace Urho3D {
 
                         float densityScaleFactor = 1.0f;
                         //if we are in the first pass - scale the sub collision by the density.  so when we calculate the inertia matrix it will reflect the density of sub shapes.
-                        //on the 2nd (final pass - scale as normal).
+                        //on the 2nd (final pass) - scale as normal.
                         if (densityPass)
                             densityScaleFactor = colComp->GetDensity()/smallestDensity;
 
@@ -896,8 +912,6 @@ namespace Urho3D {
 
                 effectiveCollision_ = resolvedCollision;
 
-
-
                
                 NewtonBodySetCollision(newtonBody_, resolvedCollision);
 
@@ -909,6 +923,8 @@ namespace Urho3D {
                 if (densityPass) {
 
                     float vol = NewtonConvexCollisionCalculateVolume(resolvedCollision);
+
+
 
 
                     NewtonBodySetMassProperties(newtonBody_, mass_, resolvedCollision);
@@ -942,23 +958,43 @@ namespace Urho3D {
                         }
 
 
-                       // URHO3D_LOGINFO("Final Inertia Matrix: " + String(NewtonToUrhoMat4(finalInertia)) + " Mass: " + String(mass_) + " Volume: " + String(vol));
+                       URHO3D_LOGINFO("hacked Inertia Matrix: " + NewtonToUrhoMat4(finalInertia).ToString() + " Mass: " + ea::to_string(mass_) + " Volume: " + ea::to_string(vol));
                     }
+
                     NewtonBodyGetCentreOfMass(newtonBody_, &finalCenterOfMass[0]);
-
-
                 }
             }
         }
 
-        
-        Matrix4 inertiaMatrixUrho = NewtonToUrhoMat4(finalInertia);
+		//take final steps.
 
-        //URHO3D_LOGINFO("Final Inertia Matrix: " + String(inertiaMatrixUrho) + " Mass: " + String(mass_));
 
-        NewtonBodySetFullMassMatrix(newtonBody_, mass_, &finalInertia[0][0]);
-		
-		
+		//move resolvedCollision so that the COM matches the body frame, and calculate inertia using that, then move collision back....
+		//#todo not sure why NewtonBodySetMassProperties is not doing this in the first place
+		if (effectiveCollision_) {
+			dMatrix finalCollisionMatrix;
+			NewtonCollisionGetMatrix(effectiveCollision_, &finalCollisionMatrix[0][0]);
+			dMatrix tmpCollisionMatrix = finalCollisionMatrix;
+			tmpCollisionMatrix.m_posit -= finalCenterOfMass;
+			NewtonCollisionSetMatrix(effectiveCollision_, &tmpCollisionMatrix[0][0]);
+
+
+			NewtonBodySetMassProperties(newtonBody_, mass_, effectiveCollision_);
+			NewtonBodyGetInertiaMatrix(newtonBody_, &finalInertia[0][0]);
+
+
+			NewtonCollisionSetMatrix(effectiveCollision_, &finalCollisionMatrix[0][0]);
+
+			NewtonBodySetMassProperties(newtonBody_, mass_, effectiveCollision_);
+
+		}
+		NewtonBodySetFullMassMatrix(newtonBody_, mass_, &finalInertia[0][0]);
+
+
+        URHO3D_LOGINFO("Final Inertia Matrix: " + NewtonToUrhoMat4(finalInertia).ToString() + " Mass: " + ea::to_string(mass_));
+
+      
+
 		//if we are building the scene body - set the COM to (0,0,0)
 		if (GetIsSceneRootBody()) {
 			
@@ -976,8 +1012,6 @@ namespace Urho3D {
 
 		centerOfMassEffective_ = NewtonToUrhoVec3(finalCenterOfMass);
 
-
-
 		NewtonBodySetCentreOfMass(newtonBody_, &UrhoToNewton(centerOfMassEffective_)[0]);
 		
         NewtonBodySetMaterialGroupID(newtonBody_, 0);
@@ -990,6 +1024,7 @@ namespace Urho3D {
 
         //ensure newton damping is 0 because we apply our own as a force.
         NewtonBodySetLinearDamping(newtonBody_, linearDampeningInternal_);
+
         NewtonBodySetAngularDamping(newtonBody_, &UrhoToNewton(angularDampeningInternal_)[0]);
 
         //set auto sleep mode.

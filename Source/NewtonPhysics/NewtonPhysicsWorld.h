@@ -355,6 +355,8 @@ namespace Urho3D
 
 	URHONEWTON_API void  CalculateRigidBodyGroupFusedVelocities(ea::vector<NewtonRigidBody*>& rigidBodies, Matrix3x4 worldReferenceFrame, Vector3& worldVelocity, Vector3& worldAngularVelocity);
 
+	///Parallel Axis Theorem:
+	URHONEWTON_API Matrix3 MoveInertiaMatrix(Matrix3 matrix, const float mass, const Vector3& delta);
 
     URHONEWTON_API void  RebuildPhysicsNodeTree(Node* node);
 
