@@ -726,7 +726,7 @@ namespace Urho3D {
         if (!IsEnabledEffective())
             return;
 
-
+		URHO3D_LOGINFO("rebuildbody..");
         ea::vector<NewtonCollisionShape*> enabledCollisionShapes;
         updateChildCollisionShapes(enabledCollisionShapes);
 
@@ -991,7 +991,7 @@ namespace Urho3D {
 		NewtonBodySetFullMassMatrix(newtonBody_, mass_, &finalInertia[0][0]);
 
 
-        URHO3D_LOGINFO("Final Inertia Matrix: " + NewtonToUrhoMat4(finalInertia).ToString() + " Mass: " + ea::to_string(mass_));
+        //URHO3D_LOGINFO("Final Inertia Matrix: " + NewtonToUrhoMat4(finalInertia).ToString() + " Mass: " + ea::to_string(mass_));
 
       
 
@@ -1050,6 +1050,8 @@ namespace Urho3D {
 
 		SetLinearVelocityHard(oldLinearVelocity);
 		SetAngularVelocity(oldAngularVelocity);
+
+		URHO3D_LOGINFO("end rebuildbody..");
     }
 
 

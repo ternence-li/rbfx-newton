@@ -142,8 +142,8 @@ namespace Urho3D {
 
     void NewtonConstraint::MarkDirty(bool dirty /*= true*/)
     {
-		if (dirty)
-			URHO3D_LOGINFO("constraint: " + ea::to_string((int)(void*)this) + "set dirty");
+		//if (dirty)
+	//		URHO3D_LOGINFO("constraint: " + ea::to_string((int)(void*)this) + "set dirty");
 
         dirty_ = dirty;
     }
@@ -422,7 +422,8 @@ namespace Urho3D {
         if (!IsEnabledEffective()) {
             freeInternal();
         }
-        else if (ownBodyResolved_ && ownBodyResolved_->GetNewtonBody()) {
+        else if (ownBodyResolved_ && ownBodyResolved_->GetNewtonBody())
+		{
  
 			freeInternal();
 
