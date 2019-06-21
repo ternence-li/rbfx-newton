@@ -524,16 +524,14 @@ namespace Urho3D {
         {
 
             int size = terrainComponent->GetHeightMap()->GetHeight();
-#ifndef _NEWTON_USE_DOUBLE
-            float* heightData = terrainComponent->GetHeightData().get();
-#else
-			float* heightData heightDataFloat = terrainComponent->GetHeightData();
+			float* heightDataRaw = terrainComponent->GetHeightData().get();
+			dFloat* heightData = (dFloat*)heightDataRaw;
 
-            dFloat* heightData = new dFloat[size*size];
+#ifdef _NEWTON_USE_DOUBLE
+            heightData = new dFloat[size*size];
             for (int i = 0; i < size*size; i++) {
-                heightData[i] = heightDataFloat[i];
+                heightData[i] = heightDataRaw[i];
             }
-
 #endif
 
 
