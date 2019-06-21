@@ -726,7 +726,7 @@ namespace Urho3D {
         if (!IsEnabledEffective())
             return;
 
-		URHO3D_LOGINFO("rebuildbody..");
+		//URHO3D_LOGINFO("rebuildbody..");
         ea::vector<NewtonCollisionShape*> enabledCollisionShapes;
         updateChildCollisionShapes(enabledCollisionShapes);
 

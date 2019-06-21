@@ -501,7 +501,7 @@ namespace Urho3D {
 
 			//its possible that the resolved bodies could be the same body, if so, continue without actually building.
 			if (ownBodyResolved_ != otherBodyResolved_) {
-				URHO3D_LOGINFO("building constraint " + ea::to_string((int)(void*)this));
+				//URHO3D_LOGINFO("building constraint " + ea::to_string((int)(void*)this));
 				buildConstraint();
 			}
 
