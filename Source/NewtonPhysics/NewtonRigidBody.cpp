@@ -1481,6 +1481,10 @@ namespace Urho3D {
 
         //basic velocity damping forces
         Vector3 velocity = GetLinearVelocity(TS_WORLD);
+
+		while (velocity.Length() > M_LARGE_VALUE)//check for large value that can occasionally happen.
+			velocity *= 0.5f;
+
         Vector3 linearDampingForce = -velocity.Normalized()*(velocity.LengthSquared())*linearDampening_ * mass_;
 
         if (linearDampingForce.Length() <= M_EPSILON)
