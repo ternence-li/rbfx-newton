@@ -61,6 +61,7 @@
 #include "NewtonPhysicsWorld.h"
 #include "Urho3D/Scene/Node.h"
 #include "NewtonRigidBody.h"
+#include "NewtonGearConstraint.h"
 
 
 URHO3D_DEFINE_APPLICATION_MAIN(PhysicsTests)
@@ -177,6 +178,8 @@ void PhysicsTests::CreateScene()
     //SpawnHingeSpringTest(Vector3(0,10,0), Quaternion::IDENTITY);
     //SpawnHingeSpringTest(Vector3(-2, 10, 0), Quaternion(-90, Vector3(0,1,0)));
 
+	SpawnGearTest(Vector3(0, 0, 0));
+
     //SpawnCollisionExceptionsTest(Vector3(0, 1, 15));
 
     //SpawnSliderTest(Vector3(0, 10, 10));
@@ -189,12 +192,12 @@ void PhysicsTests::CreateScene()
 	//SpawnRejointingTest(Vector3(0, 10, 0));
 
     ////////create scale test
-    SpawnSceneCompoundTest(Vector3(-20, 10, 20), true);
+    //SpawnSceneCompoundTest(Vector3(-20, 10, 20), true);
     //SpawnSceneCompoundTest(Vector3(-20, 10, 30), false); //this was gives newton a non-orthogonal matrix.
 
     //CreateTowerOfLiar(Vector3(40, 0, 20));
 
-	SpawnCollisionOffsetTest(Vector3(0, 0, 0));
+	//SpawnCollisionOffsetTest(Vector3(0, 0, 0));
 
     //
 
@@ -913,7 +916,7 @@ void PhysicsTests::SpawnSliderTest(Vector3 worldPosition)
     constraint->SetEnableSliderLimits(true, true);
     constraint->SetSliderLimits(-2, 2);
 
-   // constraint->SetEnableTwistLimits(true, true);
+    //constraint->SetEnableTwistLimits(true, true);
     //constraint->SetTwistLimits(-180, 180);
 
 
@@ -921,6 +924,17 @@ void PhysicsTests::SpawnSliderTest(Vector3 worldPosition)
 
     constraint->SetEnableSliderSpringDamper(true);
     //constraint->SetEnableTwistSpringDamper(true);
+
+}
+
+void PhysicsTests::SpawnGearTest(Vector3 worldPosition)
+{
+	Node* box1 = SpawnSamplePhysicsBox(scene_, worldPosition, Vector3(1, 1, 1));
+	Node* box2 = SpawnSamplePhysicsBox(scene_, worldPosition + Vector3(5, 0, 0), Vector3(1, 1, 1));
+
+	NewtonGearConstraint* constraint = box1->CreateComponent<NewtonGearConstraint>();
+
+	constraint->SetOtherBody(box2->GetComponent<NewtonRigidBody>());
 
 }
 

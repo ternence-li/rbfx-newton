@@ -67,6 +67,7 @@
 #include "dMatrix.h"
 
 #include "EASTL/sort.h"
+#include "NewtonGearConstraint.h"
 
 
 namespace Urho3D {
@@ -1011,6 +1012,8 @@ namespace Urho3D {
         NewtonSliderConstraint::RegisterObject(context);
         NewtonFullyFixedConstraint::RegisterObject(context);
         NewtonKinematicsControllerConstraint::RegisterObject(context);
+		NewtonGearConstraint::RegisterObject(context);
+
         NewtonRigidBodyContactEntry::RegisterObject(context);
 
     }

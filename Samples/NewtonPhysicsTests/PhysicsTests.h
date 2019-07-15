@@ -111,6 +111,7 @@ private:
     void SpawnHingeActuatorTest(Vector3 worldPosition);
     void SpawnCollisionExceptionsTest(Vector3 worldPosition);
     void SpawnSliderTest(Vector3 worldPosition);
+	void SpawnGearTest(Vector3 worldPosition);
     void SpawnRandomObjects();
     void SpawnCompoundedRectTest(Vector3 worldPosition);
     void SpawnCompoundedRectTest2(Vector3 worldPosition);
