@@ -1062,6 +1062,7 @@ namespace Urho3D {
     void NewtonRigidBody::updateChildCollisionShapes(ea::vector<NewtonCollisionShape*>& enabledCollisionShapes)
     {
         //evaluate child nodes (+this node) and see if there are more collision shapes
+		collisionShapes_.clear();
         GetAloneCollisionShapes(collisionShapes_, node_, true);
 
 
