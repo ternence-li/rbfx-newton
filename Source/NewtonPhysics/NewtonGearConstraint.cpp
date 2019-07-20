@@ -53,7 +53,8 @@ namespace Urho3D {
 
 	void NewtonGearConstraint::buildConstraint()
 	{
-		newtonJoint_ = new dCustomGear(ratio_, UrhoToNewton(GetOwnBuildWorldFrame().Rotation() * Vector3(1.0f,0.0f,0.0f)), UrhoToNewton(GetOtherBuildWorldFrame().Rotation() * Vector3(1.0f, 0.0f, 0.0f)), GetOwnNewtonBody(), GetOtherNewtonBody());
+		newtonJoint_ = new dCustomGear(ratio_, UrhoToNewton(GetOwnBuildWorldFrame().Rotation() * Vector3::RIGHT), 
+			UrhoToNewton(GetOtherBuildWorldFrame().Rotation() *  Vector3::RIGHT), GetOwnNewtonBody(), GetOtherNewtonBody());
 	
 	
 	}
