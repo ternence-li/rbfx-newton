@@ -958,7 +958,7 @@ namespace Urho3D {
                         }
 
 
-                       URHO3D_LOGINFO("hacked Inertia Matrix: " + NewtonToUrhoMat4(finalInertia).ToString() + " Mass: " + ea::to_string(mass_) + " Volume: " + ea::to_string(vol));
+                       URHO3D_LOGINFO("Hacked Inertia Matrix: " + NewtonToUrhoMat4(finalInertia).ToString() + " Mass: " + ea::to_string(mass_) + " Volume: " + ea::to_string(vol));
                     }
 
                     NewtonBodyGetCentreOfMass(newtonBody_, &finalCenterOfMass[0]);
@@ -1050,8 +1050,6 @@ namespace Urho3D {
 
 		SetLinearVelocityHard(oldLinearVelocity);
 		SetAngularVelocity(oldAngularVelocity);
-
-		URHO3D_LOGINFO("end rebuildbody..");
     }
 
 
