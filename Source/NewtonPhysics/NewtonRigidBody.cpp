@@ -1471,14 +1471,22 @@ namespace Urho3D {
         NewtonBodyGetPosition(newtonBody_, &pos[0]);
         NewtonBodyGetRotation(newtonBody_, &quat.m_x);
 
-		//Matrix3x4 bodyCOMMatrix = NewtonBodyGetCOMMatrix(newtonBody_);
 
-        //updateInterpolatedTransform();
-        //node_->SetScale(1.0f);
-        //node_->SetWorldTransform(Matrix3x4::IDENTITY.Translation(), Quaternion::IDENTITY, 1.0f);
         Vector3 scenePos = NewtonToUrhoVec3(pos);
         node_->SetWorldPosition(scenePos);
         node_->SetWorldRotation(NewtonToUrhoQuat(quat).Normalized());
+
+
+		if ((node_->GetWorldTransform().Translation() - lastSetNodeWorldTransform_.Translation()).Length() > M_LARGE_VALUE)
+		{
+			URHO3D_LOGWARNING("Newton Body Travelled too far to fast!, resetting  transform");
+
+
+			node_->SetWorldTransform(lastSetNodeWorldTransform_.Translation(), lastSetNodeWorldTransform_.Rotation(), 1.0f);
+			SetWorldTransformToNode();
+		}
+
+
 
         lastSetNodeWorldTransform_ = node_->GetWorldTransform();
     }
