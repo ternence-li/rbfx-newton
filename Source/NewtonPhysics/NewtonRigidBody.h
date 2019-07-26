@@ -213,7 +213,7 @@ namespace Urho3D
 
         float GetLinearDamping() const { return linearDampening_; }
 
-        /// Set Angular Damping factor (0.0 to 1.0) for angle component. default is 0
+        /// Set Angular Damping factor for angle component. default is 0
         void SetAngularDamping(float angularDamping);
 
         float GetAngularDamping() const { return angularDampening_; }

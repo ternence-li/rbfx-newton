@@ -99,7 +99,8 @@ namespace Urho3D {
         void SetTwistSpringDamperRelaxation(float relaxation);
         float GetTwistSpringDamperRelaxation() const { return twistRelaxation_; }
 
-
+		void SetTwistFriction(float friction);
+		float GetTwistFriction() const { return twistFriction_; }
 
     protected:
 
@@ -125,6 +126,7 @@ namespace Urho3D {
         float twistSpringCoef_ = SLIDER_CONSTRAINT_DEF_SPRING_COEF;
         float twistDamperCoef_ = SLIDER_CONSTRAINT_DEF_DAMPER_COEF;
 
+		float twistFriction_ = 0.0f;
 
         void applySliderLimits();
         void applyTwistLimits();

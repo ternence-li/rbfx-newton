@@ -51,8 +51,7 @@ namespace Urho3D
         URHO3D_ACCESSOR_ATTRIBUTE("Twist Spring Damper Coefficient", GetTwistDamperCoefficient, SetTwistDamperCoefficient, float, SLIDER_CONSTRAINT_DEF_DAMPER_COEF, AM_DEFAULT);
         URHO3D_ACCESSOR_ATTRIBUTE("Twist Spring Damper Relaxation", GetTwistSpringDamperRelaxation, SetTwistSpringDamperRelaxation, float, SLIDER_CONSTRAINT_DEF_RELAX, AM_DEFAULT);
 
-
-
+		URHO3D_ACCESSOR_ATTRIBUTE("Twist Friction", GetTwistFriction, SetTwistFriction, float, 0.0f, AM_DEFAULT);
 
 
 
@@ -339,7 +338,21 @@ namespace Urho3D
         }
     }
 
-    void Urho3D::NewtonSliderConstraint::DrawDebugGeometry(DebugRenderer* debug, bool depthTest)
+	void NewtonSliderConstraint::SetTwistFriction(float friction)
+	{
+		if (twistFriction_ != friction)
+		{
+			twistFriction_ = friction;
+			if (newtonJoint_)
+			{
+				static_cast<dCustomCorkScrew*>(newtonJoint_)->SetAngularFriction(twistFriction_);
+			}
+			else
+				MarkDirty();
+		}
+	}
+
+	void Urho3D::NewtonSliderConstraint::DrawDebugGeometry(DebugRenderer* debug, bool depthTest)
     {
         NewtonConstraint::DrawDebugGeometry(debug, depthTest);
     }
@@ -366,10 +379,13 @@ namespace Urho3D
 
 
         static_cast<dCustomCorkScrew*>(newtonJoint_)->EnableAngularLimits(enableLowerTwistLimit_ || enableUpperTwistLimit_);
+		static_cast<dCustomCorkScrew*>(newtonJoint_)->SetAngularFriction(twistFriction_);
         applyTwistLimits();
 
         //#todo - this springdamper doesnt seem to work.
         static_cast<dCustomCorkScrew*>(newtonJoint_)->SetAngularSpringDamper(enableTwistSpringDamper_, twistRelaxation_, twistSpringCoef_, twistDamperCoef_);
+
+
 
 
         static_cast<dCustomSlider*>(newtonJoint_)->EnableLimits(enableLowerSliderLimit_ || enableUpperSliderLimit_);
