@@ -104,7 +104,7 @@ namespace Urho3D
         void SetWorldRotation(const Quaternion& quaternion);
 
         
-        /// returns the body transform (center of mass)
+        /// returns the body transform matrix
         Matrix3x4 GetWorldTransform();
         Vector3 GetWorldPosition();
         Quaternion GetWorldRotation();
@@ -284,10 +284,16 @@ namespace Urho3D
 
 
         /// Return the net force acting on the body.
-        Vector3 GetNetForce();
+        Vector3 GetNetWorldForce();
+
+		/// sets the net world force on the body
+		void SetNetWorldForce(Vector3 force);
 
         /// Return the net torque acting on the body.
-        Vector3 GetNetTorque();
+        Vector3 GetNetWorldTorque();
+
+		/// sets the net world torque on the body.
+		void SetNetWorldTorque(Vector3 torque);
 
         ///Get the currently used newton body.
         NewtonBody* GetNewtonBody() const { return newtonBody_; }

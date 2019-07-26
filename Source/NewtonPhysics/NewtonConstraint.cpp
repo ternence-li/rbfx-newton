@@ -440,13 +440,17 @@ namespace Urho3D {
             }
 
 
-            if (otherBody_->GetEffectiveMass() <= 0.0f && ownBody_->GetEffectiveMass() <= 0.0f) {
+			otherBodyResolved_ = resolveBody(otherBody_);
+
+
+
+
+            if (otherBodyResolved_->GetEffectiveMass() <= 0.0f && ownBodyResolved_->GetEffectiveMass() <= 0.0f) {
                 URHO3D_LOGWARNING("Contraint must connect to at least 1 Rigid Body with mass greater than 0.");
 				MarkDirty(false);
 				return;
             }
 			
-			otherBodyResolved_ = resolveBody(otherBody_);
 
 			bool switchedBuild = (otherBodyResolved_ != otherBodyResolvedPrev) || (ownBodyResolved_ != ownBodyResolvedPrev);
 
@@ -502,6 +506,9 @@ namespace Urho3D {
 			//its possible that the resolved bodies could be the same body, if so, continue without actually building.
 			if (ownBodyResolved_ != otherBodyResolved_) {
 				//URHO3D_LOGINFO("building constraint " + ea::to_string((int)(void*)this));
+
+
+
 				buildConstraint();
 			}
 

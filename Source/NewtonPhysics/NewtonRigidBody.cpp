@@ -1289,7 +1289,7 @@ namespace Urho3D {
     void NewtonRigidBody::AddWorldForce(const Vector3& worldForce, const Vector3& worldPosition)
     {
         netForce_ += worldForce ; 
-        AddWorldTorque((worldPosition).CrossProduct(worldForce));
+        AddWorldTorque((worldPosition - GetCOMWorldTransform().Translation()).CrossProduct(worldForce));
     }
 
     void NewtonRigidBody::AddWorldTorque(const Vector3& torque)
@@ -1299,23 +1299,23 @@ namespace Urho3D {
 
     void NewtonRigidBody::AddLocalForce(const Vector3& force)
     {
-        AddWorldForce(node_->GetWorldRotation() * force);
+        AddWorldForce(GetWorldRotation() * force);
     }
 
     void NewtonRigidBody::AddLocalForce(const Vector3& localForce, const Vector3& localPosition)
     {
-        AddWorldForce(node_->GetWorldRotation() * localForce, GetWorldTransform() * (localPosition));
+        AddWorldForce(GetWorldRotation() * localForce, GetWorldTransform() * (localPosition));
     }
 
     void NewtonRigidBody::AddLocalTorque(const Vector3& torque)
     {
-        AddWorldTorque(node_->GetWorldRotation() * torque);
+        AddWorldTorque(GetWorldRotation() * torque);
     }
 
     void NewtonRigidBody::ResetForces()
-    {
-        netForce_ = Vector3(0, 0, 0);
-        netTorque_ = Vector3(0, 0, 0);
+	{
+		netForce_ = Vector3(0, 0, 0);
+		netTorque_ = Vector3(0, 0, 0);
     }
 
     void NewtonRigidBody::AddImpulse(const Vector3& localPosition, const Vector3& targetVelocity)
@@ -1337,18 +1337,28 @@ namespace Urho3D {
         
     }
 
-    Vector3 NewtonRigidBody::GetNetForce()
+    Vector3 NewtonRigidBody::GetNetWorldForce()
     {
         return (netForce_);
     }
 
 
-    Urho3D::Vector3 NewtonRigidBody::GetNetTorque()
-    {
+	void NewtonRigidBody::SetNetWorldForce(Vector3 force)
+	{
+		netForce_ = force;
+	}
+
+	Urho3D::Vector3 NewtonRigidBody::GetNetWorldTorque()
+{
         return (netTorque_);
     }
 
-    NewtonCollision* NewtonRigidBody::GetEffectiveNewtonCollision() const
+	void NewtonRigidBody::SetNetWorldTorque(Vector3 torque)
+	{
+		netTorque_ = torque;
+	}
+
+	NewtonCollision* NewtonRigidBody::GetEffectiveNewtonCollision() const
     {
         if (effectiveCollision_)
             return effectiveCollision_;

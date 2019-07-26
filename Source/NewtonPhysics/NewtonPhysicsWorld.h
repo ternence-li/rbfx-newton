@@ -225,7 +225,7 @@ namespace Urho3D
     protected:
 
 
-        ///Global force
+        ///Global acceleration due to gravity
         Vector3 gravity_ = DEF_GRAVITY;
 
         /// number of thread to allow newton to use
