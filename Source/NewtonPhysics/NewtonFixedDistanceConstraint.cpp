@@ -58,7 +58,7 @@ namespace Urho3D {
 		URHO3D_LOGINFO("Own Body Node: " + GetOwnBody()->GetNode()->GetName());
 
 
-        newtonJoint_ = new dCustomFixDistance(pivot0, pivot1, GetOwnNewtonBody(), GetOtherNewtonBody());
+        newtonJoint_ = new dCustomFixDistance(pivot0, pivot1, GetOwnNewtonBodyBuild(), GetOtherNewtonBodyBuild());
 
     }
 

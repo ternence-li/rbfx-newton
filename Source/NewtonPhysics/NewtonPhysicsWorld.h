@@ -186,6 +186,8 @@ namespace Urho3D
         float GetTimeScale() const { return timeScale_; }
         
 
+		NewtonRigidBody* GetSceneBody() const { return sceneBody_; }
+
 
         ///waits until the asynchronous update has finished.
         void WaitForUpdateFinished();

@@ -178,11 +178,11 @@ void PhysicsTests::CreateScene()
     //SpawnHingeSpringTest(Vector3(0,10,0), Quaternion::IDENTITY);
     //SpawnHingeSpringTest(Vector3(-2, 10, 0), Quaternion(-90, Vector3(0,1,0)));
 
-	SpawnGearTest(Vector3(0, 0, 0));
+	//SpawnGearTest(Vector3(0, 0, 0));
 
     //SpawnCollisionExceptionsTest(Vector3(0, 1, 15));
 
-    //SpawnSliderTest(Vector3(0, 10, 10));
+    SpawnSliderTest(Vector3(0, 10, 10));
     //SpawnLinearJointedObject(1.0f, Vector3(10 , 2, 10));
 
     //SpawnNSquaredJointedObject(Vector3(-20, 20, 10));
@@ -915,6 +915,7 @@ void PhysicsTests::SpawnSliderTest(Vector3 worldPosition)
 
     constraint->SetEnableSliderLimits(true, true);
     constraint->SetSliderLimits(-2, 2);
+
 
     //constraint->SetEnableTwistLimits(true, true);
     //constraint->SetTwistLimits(-180, 180);

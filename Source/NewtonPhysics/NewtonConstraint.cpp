@@ -344,6 +344,12 @@ namespace Urho3D {
         return GetOwnBody(useResolved)->GetNewtonBody();
     }
 
+	NewtonBody* NewtonConstraint::GetOwnNewtonBodyBuild() const
+	{
+
+		return GetOwnNewtonBody(true);
+	}
+
 	Urho3D::NewtonRigidBody* NewtonConstraint::GetOtherBody(bool useResolved /*= true*/) const
 	{
 		if (useResolved && (otherBodyResolved_ != otherBody_))
@@ -357,7 +363,12 @@ namespace Urho3D {
         return GetOtherBody(resolved)->GetNewtonBody();
     }
 
-    void NewtonConstraint::BuildNow()
+	NewtonBody* NewtonConstraint::GetOtherNewtonBodyBuild() const
+	{
+		return GetOtherNewtonBody(true);
+	}
+
+	void NewtonConstraint::BuildNow()
     {
         physicsWorld_->WaitForUpdateFinished();
         reEvalConstraint();
@@ -445,11 +456,11 @@ namespace Urho3D {
 
 
 
-            if (otherBodyResolved_->GetEffectiveMass() <= 0.0f && ownBodyResolved_->GetEffectiveMass() <= 0.0f) {
-                URHO3D_LOGWARNING("Contraint must connect to at least 1 Rigid Body with mass greater than 0.");
-				MarkDirty(false);
-				return;
-            }
+    //        if (otherBodyResolved_->GetEffectiveMass() <= 0.0f && ownBodyResolved_->GetEffectiveMass() <= 0.0f) {
+    //            URHO3D_LOGWARNING("Contraint must connect to at least 1 Rigid Body with mass greater than 0.");
+				//MarkDirty(false);
+				//return;
+    //        }
 			
 
 			bool switchedBuild = (otherBodyResolved_ != otherBodyResolvedPrev) || (ownBodyResolved_ != ownBodyResolvedPrev);

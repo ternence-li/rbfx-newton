@@ -167,12 +167,13 @@ namespace Urho3D {
         NewtonRigidBody* GetOwnBody(bool resolved = true) const;
 
         NewtonBody* GetOwnNewtonBody(bool resolved = true) const;
+		NewtonBody* GetOwnNewtonBodyBuild() const;
 
         /// Return the other rigid body. May be null if connected to the static world.
         NewtonRigidBody* GetOtherBody(bool resolved = true) const;
 
         NewtonBody* GetOtherNewtonBody(bool resolved = true) const;
-
+		NewtonBody* GetOtherNewtonBodyBuild() const;
 
         /// Build the constraint immediatly (once the physics loop has ended)
         void BuildNow();
