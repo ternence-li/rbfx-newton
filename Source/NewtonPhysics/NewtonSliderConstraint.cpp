@@ -359,6 +359,9 @@ namespace Urho3D
 
     void Urho3D::NewtonSliderConstraint::buildConstraint()
     {
+		URHO3D_LOGINFO("other worldframe is " + GetOtherBuildWorldFrame().ToString());
+
+
         newtonJoint_ = new dCustomCorkScrew(UrhoToNewton(GetOwnBuildWorldFrame()), UrhoToNewton(GetOtherBuildWorldFrame()), GetOwnNewtonBodyBuild(), GetOtherNewtonBodyBuild());
     }
 

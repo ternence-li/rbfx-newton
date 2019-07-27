@@ -109,6 +109,9 @@ namespace Urho3D {
     {
         if (massScale_ != massDensityScale) {
             massScale_ = massDensityScale;
+
+
+
             MarkDirty(true);
         }
     }
@@ -195,7 +198,7 @@ namespace Urho3D {
 			return Matrix3x4(NewtonToUrhoMat4(matrix));
 		}
         else {
-			
+
             //return the last transform altered by any recent calls to set transform etc..
             if (nextTransformNeeded_)
             {
@@ -1047,9 +1050,15 @@ namespace Urho3D {
 
 
 
-
-		SetLinearVelocityHard(oldLinearVelocity);
-		SetAngularVelocity(oldAngularVelocity);
+		if (mass_ > 0.0f) {
+			SetLinearVelocityHard(oldLinearVelocity);
+			SetAngularVelocity(oldAngularVelocity);
+		}
+		else
+		{
+			SetLinearVelocityHard(Vector3::ZERO);
+			SetAngularVelocity(Vector3::ZERO);
+		}
     }
 
 

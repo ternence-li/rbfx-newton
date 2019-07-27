@@ -413,7 +413,6 @@ namespace Urho3D {
         //the frame could have uniform scale - reconstruct with no scale
         Matrix3x4 worldFrameNoScale = Matrix3x4(worldFrame.Translation(), worldFrame.Rotation(), 1.0f);
 
-		//URHO3D_LOGINFO("other worldframe is " + worldFrame.ToString());
 
         return worldFrameNoScale;
     }
