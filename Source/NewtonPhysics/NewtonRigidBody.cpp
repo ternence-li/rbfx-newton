@@ -1292,13 +1292,14 @@ namespace Urho3D {
 
     void NewtonRigidBody::AddWorldForce(const Vector3& force)
     {
-        AddWorldForce(force, Vector3::ZERO);
+        AddWorldForce(force, GetCOMWorldTransform().Translation());
     }
 
     void NewtonRigidBody::AddWorldForce(const Vector3& worldForce, const Vector3& worldPosition)
     {
         netForce_ += worldForce ; 
-        AddWorldTorque((worldPosition - GetCOMWorldTransform().Translation()).CrossProduct(worldForce));
+		Vector3 worldTorque = (worldPosition - GetCOMWorldTransform().Translation()).CrossProduct(worldForce);
+        AddWorldTorque(worldTorque);
     }
 
     void NewtonRigidBody::AddWorldTorque(const Vector3& torque)
@@ -1413,7 +1414,7 @@ namespace Urho3D {
 		if (newtonBody_) {
 			dVector dAngularVel;
 			NewtonBodyGetOmega(newtonBody_, &dAngularVel[0]);
-			Vector3 angularVel = (NewtonToUrhoVec3(dAngularVel));
+			angularVel = (NewtonToUrhoVec3(dAngularVel));
 		}
 		else
 		{
