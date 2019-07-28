@@ -1486,6 +1486,13 @@ namespace Urho3D {
 
 		if (scenePos.IsInf() || scenePos.IsNaN()) {
 			URHO3D_LOGWARNING("Newton Body Position is Inf or Nan (not updating scene node)");
+
+			//this doesnt seem to do much.
+			//NewtonBodySetMatrix(newtonBody_, &UrhoToNewton(lastSetNodeWorldTransform_)[0][0]);
+			//dVector v = dVector(0, 0, 0);
+			//NewtonBodySetVelocity(newtonBody_, &v[0]);
+			//NewtonBodySetOmega(newtonBody_, &v[0]);
+			//NewtonInvalidateCache(physicsWorld_->GetNewtonWorld());
 			return;
 		}
 
