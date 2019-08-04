@@ -170,7 +170,7 @@ Node* SpawnSamplePhysicsBox(Node* parentNode, const Vector3& worldPosition, cons
     sphere1StMdl->SetMaterial(sphereMat);
 
 
-     NewtonRigidBody* s1RigBody = box->CreateComponent<NewtonRigidBody>();
+    NewtonRigidBody* s1RigBody = box->CreateComponent<NewtonRigidBody>();
 
     NewtonCollisionShape_Box* s1ColShape = box->CreateComponent<NewtonCollisionShape_Box>();
     s1ColShape->SetScaleFactor(size);

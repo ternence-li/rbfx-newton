@@ -73,7 +73,7 @@ namespace Urho3D {
         URHO3D_ATTRIBUTE("Prev Built Other Transform", Matrix3x4, initialBuiltOtherWorldPinTransform_, Matrix3x4::IDENTITY, AM_DEFAULT);
         URHO3D_ATTRIBUTE("Prev Built Own Body Transform", Matrix3x4, initialBuiltOwnBodyTransform_, Matrix3x4::IDENTITY, AM_DEFAULT);
         URHO3D_ATTRIBUTE("Prev Built Other Body Transform", Matrix3x4, initialBuiltOtherBodyTransform_, Matrix3x4::IDENTITY, AM_DEFAULT);
-        URHO3D_ATTRIBUTE("Has Been Built", bool, hasBeenBuilt_, Matrix3x4::IDENTITY, AM_DEFAULT);
+        URHO3D_ATTRIBUTE("Has Been Built", bool, hasBeenBuilt_, false, AM_DEFAULT);
 
 
         URHO3D_ATTRIBUTE("Other Body Frame Position", Vector3, otherPosition_, Vector3::ZERO, AM_DEFAULT);
@@ -154,7 +154,7 @@ namespace Urho3D {
         MarkDirty();
     }
 
-    void NewtonConstraint::SetOtherBody(NewtonRigidBody* body)
+    void NewtonConstraint::SetOtherBody(NewtonRigidBody* body, bool resetOtherPin /*= true*/)
     {
 
             if (otherBody_ != nullptr)
@@ -166,10 +166,10 @@ namespace Urho3D {
             AddJointReferenceToBody(body);
             body->GetNode()->AddListener(this);
 
-
-            SetOtherWorldPosition(GetOwnWorldFrame().Translation());
-            SetOtherWorldRotation(GetOwnWorldFrame().Rotation());
-
+			if (resetOtherPin) {
+				SetOtherWorldPosition(GetOwnWorldFrame().Translation());
+				SetOtherWorldRotation(GetOwnWorldFrame().Rotation());
+			}
 
             otherBodyId_ = body->GetID();
 
@@ -422,7 +422,20 @@ namespace Urho3D {
         MarkDirty();
     }
 
-    void NewtonConstraint::reEvalConstraint()
+	void NewtonConstraint::OnSetAttribute(const AttributeInfo& attr, const Variant& src)
+	{
+		Component::OnSetAttribute(attr, src);
+		if (attr.name_ == "Has Been Built")
+		{
+			URHO3D_LOGINFO("foundit.");
+		}
+		else if(attr.name_ == "Other Body Frame Position")
+		{
+			URHO3D_LOGINFO("foundit.");
+		}
+	}
+
+	void NewtonConstraint::reEvalConstraint()
 	{
 		NewtonRigidBody* ownBodyResolvedPrev = ownBodyResolved_;
 		NewtonRigidBody* otherBodyResolvedPrev = otherBodyResolved_;
@@ -440,8 +453,15 @@ namespace Urho3D {
             if (otherBodyId_ > 0) {
                 NewtonRigidBody* body = (NewtonRigidBody*)GetScene()->GetComponent(otherBodyId_);
                 if (body != otherBody_) {
-                    if (body)
-                        SetOtherBody(body);
+					if (body) {
+						
+						bool curHasBeenBuilt = hasBeenBuilt_;
+						SetOtherBody(body, false);
+						hasBeenBuilt_ = curHasBeenBuilt;//preserve hasBeenBuilt flag in this case!
+
+
+
+					}
                     else {
                         URHO3D_LOGWARNING("Contraint Could Not Resolve Other Body, Setting to Scene Body..");
                         SetOtherBody(physicsWorld_->sceneBody_);
@@ -453,16 +473,6 @@ namespace Urho3D {
 			otherBodyResolved_ = resolveBody(otherBody_);
 
 
-
-
-    //        if (otherBodyResolved_->GetEffectiveMass() <= 0.0f && ownBodyResolved_->GetEffectiveMass() <= 0.0f) {
-    //            URHO3D_LOGWARNING("Contraint must connect to at least 1 Rigid Body with mass greater than 0.");
-				//MarkDirty(false);
-				//return;
-    //        }
-			
-
-			bool switchedBuild = (otherBodyResolved_ != otherBodyResolvedPrev) || (ownBodyResolved_ != ownBodyResolvedPrev);
 
             Matrix3x4 ownBodyLoadedTransform;
             Matrix3x4 otherBodyLoadedTransform;
@@ -493,7 +503,6 @@ namespace Urho3D {
 					//we have just switched to a new body - we need to adjust the resolved body to a position where the ownBody_ is at initialBuiltOwnBodyTransform_.
 					Matrix3x4 localSpaceToOld = initialBuiltOwnBodyTransform_.Inverse() * ownBodyResolved_->GetWorldTransform();
 					ownBodyResolved_->SetWorldTransform(initialBuiltOwnBodyTransform_ * localSpaceToOld );
-
 				}
 				else
 				{
@@ -510,14 +519,13 @@ namespace Urho3D {
 				{
 					otherBodyResolved_->SetWorldTransform(initialBuiltOtherBodyTransform_);
 				}
+					URHO3D_LOGINFO("using initial transforms.");
             }
 
 
 			//its possible that the resolved bodies could be the same body, if so, continue without actually building.
 			if (ownBodyResolved_ != otherBodyResolved_) {
-				//URHO3D_LOGINFO("building constraint " + ea::to_string((int)(void*)this));
-
-
+				URHO3D_LOGINFO("building constraint " + ea::to_string((int)(void*)this));
 
 				buildConstraint();
 			}
@@ -526,11 +534,9 @@ namespace Urho3D {
             if (!hasBeenBuilt_) {
 				
                 //save the state of bodies and pins after the first build
-                initialBuiltOwnWorldPinTransform_ = GetOwnBuildWorldFrame();
-                initialBuiltOwnBodyTransform_ = ownBody_->GetWorldTransform();
-
-                initialBuiltOtherWorldPinTransform_ = GetOtherBuildWorldFrame();
-                initialBuiltOtherBodyTransform_ = otherBody_->GetWorldTransform();
+                initialBuiltOwnBodyTransform_ = ownBodyResolved_->GetWorldTransform();
+                initialBuiltOtherBodyTransform_ = otherBodyResolved_->GetWorldTransform();
+				URHO3D_LOGINFO("saving initial transforms.");
             }
             else
             {

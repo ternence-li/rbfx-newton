@@ -25,11 +25,14 @@
 #include "UrhoNewtonApi.h"
 #include "Urho3D/Scene/Component.h"
 #include "Urho3D/Scene/Node.h"
+#include "Urho3D/IO/ArchiveSerialization.h"
+#include "Urho3D/IO/Archive.h"
 
 #include "Newton.h"
 #include "dVector.h"
 
 #include "EASTL/hash_set.h"
+
 
 class NewtonBody;
 
@@ -75,6 +78,7 @@ namespace Urho3D
             COLLISION_ALL = 1,          //generate all collision events start, during, and end.
             COLLISION_START_END = 2,    //only generate start of collision and end of collision.
         };
+
 
 
         friend class NewtonCollisionShape;
@@ -198,7 +202,7 @@ namespace Urho3D
 
 		Vector3 GetAngularMomentum()  const;
 
-        /// Set linear velocity in world cordinates. if useForces is false the velocity will be set exactly with no regard to using forces to achieve the desired velocity.
+        /// Set linear velocity in world coordinates. if useForces is false the velocity will be set exactly with no regard to using forces to achieve the desired velocity.
         void SetLinearVelocity(const Vector3& worldVelocity, bool useForces = true);
 
         void SetLinearVelocityHard(const Vector3& worldVelocity);
@@ -351,7 +355,8 @@ namespace Urho3D
 
 
 
-    protected:
+
+	protected:
 
 
         /// Internal newton body
@@ -518,6 +523,12 @@ namespace Urho3D
 
 
     };
+
+
+	bool SerializeValue(Archive& archive, const char* name, NewtonRigidBody::CollisionOverrideEntry& value);
+
+	template <class ArchiveType, class ResourceType, class StructType>
+	SharedPtr<ResourceType> SaveGenericStruct(Context* context, const StructType& data);
 
 
 	inline bool RigidBodySceneDepthCompare(const WeakPtr<NewtonRigidBody>& body1, const WeakPtr<NewtonRigidBody>& body2) {

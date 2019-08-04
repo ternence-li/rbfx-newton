@@ -70,7 +70,7 @@ namespace Urho3D {
         void SetDisableCollision(bool disable);
 
         /// Set other body to connect to. Set to null to connect to the static world.
-        virtual void SetOtherBody(NewtonRigidBody* body);
+        virtual void SetOtherBody(NewtonRigidBody* body, bool resetOtherPin = true);
 
 
 
@@ -185,7 +185,10 @@ namespace Urho3D {
 
         virtual void OnSetEnabled() override;
 
-    protected:
+
+		virtual void OnSetAttribute(const AttributeInfo& attr, const Variant& src) override;
+
+	protected:
         /// Physics world.
         WeakPtr<NewtonPhysicsWorld> physicsWorld_;
         /// Own rigid body.

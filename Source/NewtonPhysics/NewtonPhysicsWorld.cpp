@@ -1004,6 +1004,10 @@ namespace Urho3D {
         NewtonCollisionShape_HeightmapTerrain::RegisterObject(context);
 
         NewtonRigidBody::RegisterObject(context);
+		//NewtonRigidBody::CollisionOverrideEntry::RegisterObject(context);
+
+
+
         NewtonMeshObject::RegisterObject(context);
         NewtonConstraint::RegisterObject(context);
         NewtonFixedDistanceConstraint::RegisterObject(context);

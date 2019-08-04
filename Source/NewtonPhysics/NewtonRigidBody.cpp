@@ -48,6 +48,8 @@
 #include "dMatrix.h"
 #include "dQuaternion.h"
 #include "dgQuaternion.h"
+#include "Urho3D/Scene/Serializable.h"
+#include "Urho3D/Resource/XMLArchive.h"
 
 
 namespace Urho3D {
@@ -132,7 +134,7 @@ namespace Urho3D {
             Activate();
 
             Matrix3x4 scaleLessTransform((transform.Translation()), transform.Rotation(), 1.0f);
-           
+			URHO3D_LOGINFO(transform.Translation().ToString());
 			NewtonBodySetMatrix(newtonBody_, &UrhoToNewton(scaleLessTransform)[0][0]);
         }
         else
@@ -679,7 +681,10 @@ namespace Urho3D {
 
 
 
-    void NewtonRigidBody::calculateSceneDepth()
+
+
+
+	void NewtonRigidBody::calculateSceneDepth()
     {
         sceneDepth_ = 0;
         Node* curNode = node_;
@@ -1553,6 +1558,5 @@ namespace Urho3D {
 
 
 
-	
 
 }
