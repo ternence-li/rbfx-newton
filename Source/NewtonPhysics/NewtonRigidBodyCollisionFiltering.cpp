@@ -4,7 +4,6 @@
 
 
 #include "Urho3D/IO/Log.h"
-#include "Urho3D/Core/Object.h"
 
 
 namespace Urho3D
@@ -107,24 +106,14 @@ namespace Urho3D
             canCollide = false;
             exceptionsSpecified = true;
         }
-        
-		if (collisionExceptions_.contains(StringHash(otherBody->GetID())))
+        if (collisionExceptions_.contains(StringHash(otherBody->GetID())))
         {
-			CollisionOverrideEntry entry;
-			entry = *(CollisionOverrideEntry*)collisionExceptions_[StringHash(otherBody->GetID())].GetBufferPtr();
-            canCollide &= entry.enableCollisions_;
+            canCollide &= collisionExceptions_[StringHash(otherBody->GetID())].GetBool();
             exceptionsSpecified = true;
         }
-        
-		
-		
-		if (otherBody->collisionExceptions_.contains(StringHash(GetID())))
+        if (otherBody->collisionExceptions_.contains(StringHash(GetID())))
         {
-
-			CollisionOverrideEntry entry;
-			entry = *(CollisionOverrideEntry*)otherBody->collisionExceptions_[StringHash(GetID())].GetBufferPtr();
-			canCollide &= entry.enableCollisions_;
-
+            canCollide &= otherBody->collisionExceptions_[StringHash(GetID())].GetBool();
             exceptionsSpecified = true;
         }
 
