@@ -525,12 +525,6 @@ namespace Urho3D
     };
 
 
-	bool SerializeValue(Archive& archive, const char* name, NewtonRigidBody::CollisionOverrideEntry& value);
-
-	template <class ArchiveType, class ResourceType, class StructType>
-	SharedPtr<ResourceType> SaveGenericStruct(Context* context, const StructType& data);
-
-
 	inline bool RigidBodySceneDepthCompare(const WeakPtr<NewtonRigidBody>& body1, const WeakPtr<NewtonRigidBody>& body2) {
         return (body1->GetSceneDepth() < body2->GetSceneDepth());
     }
