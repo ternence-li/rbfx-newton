@@ -49,7 +49,6 @@
 #include "dQuaternion.h"
 #include "dgQuaternion.h"
 #include "Urho3D/Scene/Serializable.h"
-#include "Urho3D/Resource/XMLArchive.h"
 
 
 namespace Urho3D {

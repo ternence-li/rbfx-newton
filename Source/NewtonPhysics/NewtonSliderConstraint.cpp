@@ -369,6 +369,14 @@ namespace Urho3D
 
 		}
 
+		URHO3D_LOGINFO("Building a new Slider Joint:");
+		URHO3D_LOGINFO(("other position: " + otherPosition_.ToString()).c_str());
+		URHO3D_LOGINFO(("other rotation: " + otherRotation_.ToString()).c_str());
+
+		
+		URHO3D_LOGINFO(("own position: " + position_.ToString()).c_str());
+		URHO3D_LOGINFO(("own rotation: " + rotation_.ToString()).c_str());
+
 
 
         newtonJoint_ = new dCustomCorkScrew(UrhoToNewton(GetOwnBuildWorldFrame()), UrhoToNewton(GetOtherBuildWorldFrame()), GetOwnNewtonBodyBuild(), GetOtherNewtonBodyBuild());
@@ -378,10 +386,6 @@ namespace Urho3D
     {
         if (!NewtonConstraint::applyAllJointParams())
             return false;
-
-
-
-
 
 
         

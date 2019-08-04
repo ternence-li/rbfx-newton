@@ -25,8 +25,6 @@
 #include "UrhoNewtonApi.h"
 #include "Urho3D/Scene/Component.h"
 #include "Urho3D/Scene/Node.h"
-#include "Urho3D/IO/ArchiveSerialization.h"
-#include "Urho3D/IO/Archive.h"
 
 #include "Newton.h"
 #include "dVector.h"

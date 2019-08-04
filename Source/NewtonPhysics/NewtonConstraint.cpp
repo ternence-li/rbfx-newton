@@ -657,7 +657,7 @@ namespace Urho3D {
 			//resolve ownBody just in case it should actually belong to a parent body.
 			ownBodyResolved_ = resolveBody(ownBody_);
             
-            SetOtherBody(physicsWorld_->sceneBody_);
+            SetOtherBody(physicsWorld_->sceneBody_, false);
 
             physicsWorld_->addConstraint(this);
 
