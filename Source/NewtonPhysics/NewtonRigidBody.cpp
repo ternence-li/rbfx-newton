@@ -552,6 +552,8 @@ namespace Urho3D {
     {
         Component::DrawDebugGeometry(debug, depthTest);
         if (newtonBody_ && GetEffectiveNewtonCollision()) {
+
+			float localScale = physicsWorld_->debugScale_ * 0.5f;
             if (showAABB )
             {
                     dMatrix matrix;
@@ -572,13 +574,13 @@ namespace Urho3D {
             if (showCenterOfMass) {
 
 
-				debug->AddFrame(GetCOMWorldTransform(), 1.2f, Color::MAGENTA, Color::YELLOW, Color::CYAN, depthTest);
+				debug->AddFrame(GetCOMWorldTransform(), 1.2f*localScale, Color::MAGENTA, Color::YELLOW, Color::CYAN, depthTest);
             }
 			if (showBodyFrame)
 			{
 				dMatrix matrix;
 				NewtonBodyGetMatrix(newtonBody_, &matrix[0][0]);
-				debug->AddFrame(Matrix3x4(NewtonToUrhoMat4(matrix)), 1.0f, Color::RED, Color::GREEN, Color::BLUE, depthTest);
+				debug->AddFrame(Matrix3x4(NewtonToUrhoMat4(matrix)), 1.0f*localScale, Color::RED, Color::GREEN, Color::BLUE, depthTest);
 
 			}
             if (showContactForces)
@@ -608,7 +610,7 @@ namespace Urho3D {
                                 NewtonMaterialGetContactPositionAndNormal(material, newtonBody_, &point.m_x, &normal.m_x);
                                 dVector normalforce(normal.Scale(contactForce.DotProduct3(normal)));
                                 dVector p0(point);
-                                dVector p1(point + normalforce.Scale(scaleFactor));
+                                dVector p1(point + normalforce.Scale(scaleFactor*localScale));
 
                                 debug->AddLine((Vector3((p0.m_x), (p0.m_y), (p0.m_z))), (Vector3((p1.m_x), (p1.m_y), (p1.m_z))), Color::GRAY, depthTest);
 
@@ -616,14 +618,14 @@ namespace Urho3D {
 
                                 // these are the components of the tangents forces at the contact point, the can be display at the contact position point.
                                 NewtonMaterialGetContactTangentDirections(material, newtonBody_, &tangentDir0[0], &tangentDir1[0]);
-                                dVector tangentForce1(tangentDir0.Scale((contactForce.DotProduct3(tangentDir0)) * scaleFactor));
-                                dVector tangentForce2(tangentDir1.Scale((contactForce.DotProduct3(tangentDir1)) * scaleFactor));
+                                dVector tangentForce1(tangentDir0.Scale((contactForce.DotProduct3(tangentDir0)) * scaleFactor * localScale));
+                                dVector tangentForce2(tangentDir1.Scale((contactForce.DotProduct3(tangentDir1)) * scaleFactor * localScale));
 
-                                p1 = point + tangentForce1.Scale(scaleFactor);
+                                p1 = point + tangentForce1.Scale(scaleFactor * localScale);
                                 debug->AddLine((Vector3((p0.m_x), (p0.m_y), (p0.m_z))), (Vector3((p1.m_x), (p1.m_y), (p1.m_z))), Color::GRAY, depthTest);
 
 
-                                p1 = point + tangentForce2.Scale(scaleFactor);
+                                p1 = point + tangentForce2.Scale(scaleFactor * localScale);
                                 debug->AddLine((Vector3((p0.m_x), (p0.m_y), (p0.m_z))), (Vector3((p1.m_x), (p1.m_y), (p1.m_z))), Color::GRAY, depthTest);
                             }
                         }

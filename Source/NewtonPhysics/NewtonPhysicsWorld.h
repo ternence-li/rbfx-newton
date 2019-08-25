@@ -63,7 +63,7 @@ namespace Urho3D
         /// Register object factory.
         static void RegisterObject(Context* context);
 
-        virtual void DrawDebugGeometry(DebugRenderer* debug, bool depthTest);
+        virtual void DrawDebugGeometry(DebugRenderer* debug, bool depthTest, float scale);
 
         //flag indicating if the entry is in use or not. used for pooling.
         bool expired_ = true;
@@ -188,6 +188,8 @@ namespace Urho3D
 
 		NewtonRigidBody* GetSceneBody() const { return sceneBody_; }
 
+		///set the scale of the debug renders for physics components.
+		void SetDebugScale(float scale) { debugScale_ = scale; }
 
         ///waits until the asynchronous update has finished.
         void WaitForUpdateFinished();
@@ -300,7 +302,7 @@ namespace Urho3D
 
         float timeScale_ = 1.0f;
 
-        
+		float debugScale_ = 1.0f;
  
 
         ///convex casts

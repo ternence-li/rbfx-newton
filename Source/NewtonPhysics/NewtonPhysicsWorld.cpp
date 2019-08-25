@@ -188,6 +188,8 @@ namespace Urho3D {
         {
             WaitForUpdateFinished();
 
+			
+
             if (drawConstraints) {
                 //draw debug geometry on constraints.
                 for (NewtonConstraint* constraint : constraintList)
@@ -201,7 +203,7 @@ namespace Urho3D {
                 for (int i = 0; i < contactEntryPool_.size(); i++)
                 {
                     if (!contactEntryPool_[i]->expired_)
-                        contactEntryPool_[i]->DrawDebugGeometry(debug, depthTest);
+                        contactEntryPool_[i]->DrawDebugGeometry(debug, depthTest, debugScale_);
                 }
             }
 
@@ -1049,14 +1051,15 @@ namespace Urho3D {
         context->RegisterFactory<NewtonRigidBodyContactEntry>();
     }
 
-    void NewtonRigidBodyContactEntry::DrawDebugGeometry(DebugRenderer* debug, bool depthTest)
+    void NewtonRigidBodyContactEntry::DrawDebugGeometry(DebugRenderer* debug, bool depthTest, float scale)
     {
         //draw contact points
         if (!expired_)
         {
+
             for (int i = 0; i < numContacts; i++)
             {
-                debug->AddLine(contactPositions[i], (contactPositions[i] + contactNormals[i]), Color::GREEN, depthTest);
+                debug->AddLine(contactPositions[i], (contactPositions[i] + contactNormals[i]*scale), Color::GREEN, depthTest);
             }
         }
     }

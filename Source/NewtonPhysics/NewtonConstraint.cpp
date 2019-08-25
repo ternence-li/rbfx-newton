@@ -87,6 +87,9 @@ namespace Urho3D {
         if (!IsEnabled())
             return;
 
+
+		float scale = physicsWorld_->debugScale_;
+
         //draw 2 part line from one frame to the other. Black touching own body and gray touching other body.
         Vector3 midPoint = (GetOtherWorldFrame().Translation() + GetOwnWorldFrame().Translation())*0.5f;
         debug->AddLine(GetOwnWorldFrame().Translation(), midPoint, Color::BLACK, depthTest);
@@ -126,14 +129,14 @@ namespace Urho3D {
         Color yAxisDark = yAxisC.Lerp(Color::BLACK, 0.5f);
         Color zAxisDark = zAxisC.Lerp(Color::BLACK, 0.5f);
 
-		//#todo re enable!
-        debug->AddFrame(GetOwnWorldFrame(), axisLengths, xAxisC, yAxisC, zAxisC, depthTest);
-        debug->AddFrame(GetOtherWorldFrame(), axisLengths, xAxisDark, yAxisDark, zAxisDark, depthTest);
+		
+        debug->AddFrame(GetOwnWorldFrame(), axisLengths*scale, xAxisC, yAxisC, zAxisC, depthTest);
+        debug->AddFrame(GetOtherWorldFrame(), axisLengths*scale, xAxisDark, yAxisDark, zAxisDark, depthTest);
 
 
         //draw the special joint stuff given to us by newton
         UrhoNewtonDebugDisplay debugDisplay(debug, depthTest);
-        debugDisplay.SetDrawScale(1.0f);
+        debugDisplay.SetDrawScale(1.0f*scale);
         if (newtonJoint_)
         {
             newtonJoint_->Debug(&debugDisplay);//#todo this sometimes covers up the 2 frames above - maybe alter inside newton instead?
