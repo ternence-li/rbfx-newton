@@ -134,6 +134,10 @@ namespace Urho3D {
 
             Matrix3x4 scaleLessTransform((transform.Translation()), transform.Rotation(), 1.0f);
 			URHO3D_LOGINFO(transform.Translation().ToString());
+
+			if (scaleLessTransform.IsNaN())
+				URHO3D_LOGINFO("1");
+
 			NewtonBodySetMatrix(newtonBody_, &UrhoToNewton(scaleLessTransform)[0][0]);
         }
         else
@@ -153,6 +157,9 @@ namespace Urho3D {
             NewtonBodyGetRotation(newtonBody_, &orientation.m_x);
 
             Matrix3x4 transform((position), NewtonToUrhoQuat(orientation), 1.0f);
+
+			if (transform.IsNaN())
+				URHO3D_LOGINFO("2");
 
 			NewtonBodySetMatrix(newtonBody_, &UrhoToNewton(transform)[0][0]);
         }
@@ -179,6 +186,9 @@ namespace Urho3D {
 			Matrix3x4 bodyMatrix = Matrix3x4(NewtonToUrhoMat4(matrix));
             Matrix3x4 transform(bodyMatrix.Translation(), quaternion, 1.0f);
         
+			if (transform.IsNaN())
+				URHO3D_LOGINFO("3");
+
 			NewtonBodySetMatrix(newtonBody_, &UrhoToNewton(transform)[0][0]);
 		
 		
@@ -1488,17 +1498,25 @@ namespace Urho3D {
         NewtonBodyGetRotation(newtonBody_, &quat.m_x);
 
 
+
         Vector3 scenePos = NewtonToUrhoVec3(pos);
 
 		if (scenePos.IsInf() || scenePos.IsNaN()) {
-			URHO3D_LOGWARNING("Newton Body Position is Inf or Nan (not updating scene node)");
+			URHO3D_LOGWARNING("Newton Body Position is Inf or Nan (trying to revert newtonbody matrix to the node's matrix");
+			
+			NewtonInvalidateCache(physicsWorld_->GetNewtonWorld());
+			
+			//reset the body's state
+			NewtonBodySetMatrix(newtonBody_, &UrhoToNewton(node_->GetWorldTransform())[0][0]);
+			dVector v = dVector(0, 0, 0);
+			NewtonBodySetVelocity(newtonBody_, &v[0]);
+			NewtonBodySetOmega(newtonBody_, &v[0]);
 
-			//this doesnt seem to do much.
-			//NewtonBodySetMatrix(newtonBody_, &UrhoToNewton(lastSetNodeWorldTransform_)[0][0]);
-			//dVector v = dVector(0, 0, 0);
-			//NewtonBodySetVelocity(newtonBody_, &v[0]);
-			//NewtonBodySetOmega(newtonBody_, &v[0]);
-			//NewtonInvalidateCache(physicsWorld_->GetNewtonWorld());
+			//verify the state has changed back to valid position
+			NewtonBodyGetPosition(newtonBody_, &pos[0]);
+			NewtonBodyGetRotation(newtonBody_, &quat.m_x);
+			URHO3D_LOGINFO(NewtonToUrhoVec3(pos).ToString()); //does indeed print out a valid position
+
 			return;
 		}
 
@@ -1506,22 +1524,6 @@ namespace Urho3D {
         node_->SetWorldRotation(NewtonToUrhoQuat(quat).Normalized());
 
 
-
-
-		//if (scenePos.IsNaN() || scenePos.IsInf() || ((node_->GetWorldTransform().Translation() - lastSetNodeWorldTransform_.Translation()).Length() > 10.0f))
-		//{
-		//	URHO3D_LOGWARNING("Newton Rigid Body Traveled too far to fast!, resetting  transform");
-		//	URHO3D_LOGWARNING("New Newton Body Position: " + scenePos.ToString());
-		//	URHO3D_LOGWARNING("Prev Newton Body Position: " + lastSetNodeWorldTransform_.Translation().ToString());
-
-
-
-		//	node_->SetWorldTransform(lastSetNodeWorldTransform_.Translation(), lastSetNodeWorldTransform_.Rotation(), 1.0f);
-
-		//	NewtonBodySetVelocity(newtonBody_, &UrhoToNewton(Vector3::ZERO)[0]);
-		//	NewtonBodySetMatrix(newtonBody_, &UrhoToNewton(lastSetNodeWorldTransform_)[0][0]);
-		//	NewtonInvalidateCache(physicsWorld_->GetNewtonWorld());
-		//}
 
         lastSetNodeWorldTransform_ = node_->GetWorldTransform();
     }
