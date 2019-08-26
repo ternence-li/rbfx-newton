@@ -130,6 +130,15 @@ namespace Urho3D {
     void NewtonKinematicsControllerConstraint::HandlePhysicsPreStep(StringHash event, VariantMap& eventData)
     {
         updateTarget();
+
+		if (ownBody_->GetIsKinematic()) {
+
+			Matrix3x4 ownLocalTransform = Matrix3x4(position_, rotation_, 1.0f);
+
+
+			ownBody_->SetWorldTransform(Matrix3x4(otherPosition_, otherRotation_, 1.0f) * ownLocalTransform.Inverse() );
+
+		}
     }
 
 }
