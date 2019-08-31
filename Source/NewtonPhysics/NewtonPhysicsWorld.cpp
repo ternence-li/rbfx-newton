@@ -142,7 +142,8 @@ namespace Urho3D {
         isUpdating_ = false;
     }
 
-    void NewtonPhysicsWorld::SetIterationCount(int numIterations /*= 8*/)
+
+	void NewtonPhysicsWorld::SetIterationCount(int numIterations /*= 8*/)
     {
         iterationCount_ = numIterations;
         applyNewtonWorldSettings();
@@ -623,9 +624,13 @@ namespace Urho3D {
             eventData[NewtonPhysicsPostStep::P_TIMESTEP] = physicsTimeStep;
             SendEvent(E_NEWTON_PHYSICSPOSTSTEP, eventData);
 
-
+			if (stepsRemaining_ > 0)
+				stepsRemaining_--;
         }
         
+		if (!((stepsRemaining_ > 0) || (stepsRemaining_ <= -1)))
+			return;
+
 
         if (simulationStarted_) {
 

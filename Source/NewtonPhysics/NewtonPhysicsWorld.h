@@ -196,6 +196,12 @@ namespace Urho3D
 
         bool GetIsUpdating() { return isUpdating_; }
 
+		///sets how many more steps to simulate going forward.  set numSteps < 0 for continued regular simulation.
+		void SetRemainingSteps(int numSteps) { stepsRemaining_ = numSteps; }
+
+		int GetRemainingSteps() const { return stepsRemaining_; }
+
+
         /// set how many iterations newton will run.
         void SetIterationCount(int numIterations);
 
@@ -291,6 +297,7 @@ namespace Urho3D
 
         void rebuildDirtyPhysicsComponents();
         bool simulationStarted_ = false;
+		int stepsRemaining_ = -1;
 
         /// Internal newton world
         NewtonWorld* newtonWorld_ = nullptr;
