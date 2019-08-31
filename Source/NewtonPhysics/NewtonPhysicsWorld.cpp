@@ -309,7 +309,7 @@ namespace Urho3D {
                 //NewtonMaterialSetCompoundCollisionCallback(newtonWorld_, 0, 0, Newton_AABBCompoundOverlapCallback);
                 NewtonSetPostUpdateCallback(newtonWorld_, Newton_PostUpdateCallback);
                 NewtonWorldSetCreateDestroyContactCallback(newtonWorld_, nullptr, Newton_DestroyContactCallback);
-
+				
 
             }
         }
@@ -871,7 +871,8 @@ namespace Urho3D {
     }
 
 
-    //add rigid bodies to the list as the function recurses from node to root. the last rigid body in rigidBodies is the most root. optionally include the scene as root.
+
+	//add rigid bodies to the list as the function recurses from node to root. the last rigid body in rigidBodies is the most root. optionally include the scene as root.
     void GetRootRigidBodies(ea::vector<NewtonRigidBody*>& rigidBodies, Node* node, bool includeScene)
     {
         NewtonRigidBody* body = node->GetComponent<NewtonRigidBody>();
