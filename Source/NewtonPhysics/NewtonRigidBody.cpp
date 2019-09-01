@@ -136,7 +136,7 @@ namespace Urho3D {
 			URHO3D_LOGINFO(transform.Translation().ToString());
 
 			if (scaleLessTransform.IsNaN() || scaleLessTransform.IsInf())
-				URHO3D_LOGINFO("SetWorldTransform nan");
+				URHO3D_LOGINFO("1");
 
 			NewtonBodySetMatrix(newtonBody_, &UrhoToNewton(scaleLessTransform)[0][0]);
         }
@@ -655,10 +655,16 @@ namespace Urho3D {
         needsRebuilt_ = dirty;
 
 		if (dirty) {
-			//mark constraints dirty too
-			for (NewtonConstraint* constraint : connectedConstraints_)
-			{
-				constraint->MarkDirty(true);
+
+			//mark all constraints connected to this body and possible bodies on child nodes as dirty so they get rebuild and re-resolved.
+			ea::vector<Node*> childBodyNodes;
+			node_->GetChildrenWithComponent<NewtonRigidBody>(childBodyNodes, true);
+			childBodyNodes.push_back(node_);
+			for (Node* nd : childBodyNodes) {
+				for (NewtonConstraint* constraint : nd->GetComponent<NewtonRigidBody>()->connectedConstraints_)
+				{
+					constraint->MarkDirty(true);
+				}
 			}
 		}
     }

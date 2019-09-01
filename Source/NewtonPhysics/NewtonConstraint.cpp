@@ -145,8 +145,8 @@ namespace Urho3D {
 
     void NewtonConstraint::MarkDirty(bool dirty /*= true*/)
     {
-		//if (dirty)
-	//		URHO3D_LOGINFO("constraint: " + ea::to_string((int)(void*)this) + "set dirty");
+		if (dirty)
+			URHO3D_LOGINFO("constraint: " + ea::to_string((int)(void*)this) + " marked dirty");
 
         dirty_ = dirty;
     }
@@ -525,14 +525,20 @@ namespace Urho3D {
 					URHO3D_LOGINFO("using initial transforms.");
             }
 
-			URHO3D_LOGINFO("testpoint");
+			URHO3D_LOGINFO("Attempting to build constraint..");
 			//its possible that the resolved bodies could be the same body, if so, continue without actually building.
 			if (ownBodyResolved_ != otherBodyResolved_) {
-				URHO3D_LOGINFO("building constraint " + ea::to_string((int)(void*)this));
-
 				
-				buildConstraint();
+				//make sure neither body is kinematic
+				if (!ownBodyResolved_->isKinematic_ && !otherBodyResolved_->isKinematic_)
+				{
+					//make sure at least one body has mass.
+					if (!(ownBodyResolved_->GetEffectiveMass() <= 0.0f && otherBodyResolved_->GetEffectiveMass() <= 0.0f)) {
+						URHO3D_LOGINFO("building constraint " + ea::to_string((int)(void*)this));
 
+						buildConstraint();
+					}
+				}
 				
 			}
 
