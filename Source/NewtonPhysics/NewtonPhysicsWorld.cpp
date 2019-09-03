@@ -86,14 +86,10 @@ namespace Urho3D {
         {
             contactEntryPool_.insert(contactEntryPool_.begin(), context->CreateObject<NewtonRigidBodyContactEntry>());
         }
-
-        //set timestep target to max fps
-		timeStepTarget_ = 1.0f / GetSubsystem<Engine>()->GetFps();
     }
 
     NewtonPhysicsWorld::~NewtonPhysicsWorld()
     {
-
         freeWorld();
     }
 
@@ -589,15 +585,14 @@ namespace Urho3D {
 
        float timeStep = eventData[SceneSubsystemUpdate::P_TIMESTEP].GetFloat();
 
-	   if (timeStep <= M_EPSILON)
-		   timeStep = timeStepTarget_;
+	   timeStepAvg_ += (timeStep - timeStepAvg_)*0.5f;
 
-	   //timeStepTarget_ for impulse calculates etc.. 
-       timeStepTarget_ = timeStep;
+		//do the update.
+	   timeStepAvg_ = Clamp(timeStep, 0.0f, 1.0f / 60.0f);
 
-
-       //do the update.
-       Update(timeStep, true);
+	   Update(timeStepAvg_, true);
+		
+	   
     }
 
 

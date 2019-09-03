@@ -145,8 +145,8 @@ namespace Urho3D {
 
     void NewtonConstraint::MarkDirty(bool dirty /*= true*/)
     {
-		if (dirty)
-			URHO3D_LOGINFO("constraint: " + ea::to_string((int)(void*)this) + " marked dirty");
+		//if (dirty)
+		//	URHO3D_LOGINFO("constraint: " + ea::to_string((int)(void*)this) + " marked dirty");
 
         dirty_ = dirty;
     }
@@ -428,14 +428,7 @@ namespace Urho3D {
 	void NewtonConstraint::OnSetAttribute(const AttributeInfo& attr, const Variant& src)
 	{
 		Component::OnSetAttribute(attr, src);
-		if (attr.name_ == "Has Been Built")
-		{
-			URHO3D_LOGINFO("foundit.");
-		}
-		else if(attr.name_ == "Other Body Frame Position")
-		{
-			URHO3D_LOGINFO("foundit.");
-		}
+
 	}
 
 	void NewtonConstraint::reEvalConstraint()
@@ -522,10 +515,10 @@ namespace Urho3D {
 				{
 					otherBodyResolved_->SetWorldTransform(initialBuiltOtherBodyTransform_);
 				}
-					URHO3D_LOGINFO("using initial transforms.");
+					
             }
 
-			URHO3D_LOGINFO("Attempting to build constraint..");
+			//URHO3D_LOGINFO("Attempting to build constraint..");
 			//its possible that the resolved bodies could be the same body, if so, continue without actually building.
 			if (ownBodyResolved_ != otherBodyResolved_) {
 				
@@ -534,7 +527,7 @@ namespace Urho3D {
 				{
 					//make sure at least one body has mass.
 					if (!(ownBodyResolved_->GetEffectiveMass() <= 0.0f && otherBodyResolved_->GetEffectiveMass() <= 0.0f)) {
-						URHO3D_LOGINFO("building constraint " + ea::to_string((int)(void*)this));
+						//URHO3D_LOGINFO("building constraint " + ea::to_string((int)(void*)this));
 
 						buildConstraint();
 					}
@@ -548,7 +541,7 @@ namespace Urho3D {
                 //save the state of bodies and pins after the first build
                 initialBuiltOwnBodyTransform_ = ownBodyResolved_->GetWorldTransform();
                 initialBuiltOtherBodyTransform_ = otherBodyResolved_->GetWorldTransform();
-				URHO3D_LOGINFO("saving initial transforms.");
+				//URHO3D_LOGINFO("saving initial transforms.");
             }
             else
             {

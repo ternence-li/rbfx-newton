@@ -133,10 +133,7 @@ namespace Urho3D {
             Activate();
 
             Matrix3x4 scaleLessTransform((transform.Translation()), transform.Rotation(), 1.0f);
-			URHO3D_LOGINFO(transform.Translation().ToString());
 
-			if (scaleLessTransform.IsNaN() || scaleLessTransform.IsInf())
-				URHO3D_LOGINFO("1");
 
 			NewtonBodySetMatrix(newtonBody_, &UrhoToNewton(scaleLessTransform)[0][0]);
         }
@@ -158,8 +155,6 @@ namespace Urho3D {
 
             Matrix3x4 transform((position), NewtonToUrhoQuat(orientation), 1.0f);
 
-			if (transform.IsNaN() || transform.IsInf())
-				URHO3D_LOGINFO("SetWorldPosition nan");
 
 			NewtonBodySetMatrix(newtonBody_, &UrhoToNewton(transform)[0][0]);
         }
@@ -186,8 +181,7 @@ namespace Urho3D {
 			Matrix3x4 bodyMatrix = Matrix3x4(NewtonToUrhoMat4(matrix));
             Matrix3x4 transform(bodyMatrix.Translation(), quaternion, 1.0f);
         
-			if (transform.IsNaN() || transform.IsInf())
-				URHO3D_LOGINFO("SetWorldRotation nan");
+
 
 			NewtonBodySetMatrix(newtonBody_, &UrhoToNewton(transform)[0][0]);
 		
@@ -353,15 +347,13 @@ namespace Urho3D {
                 
 				Vector3 worldPos = GetWorldPosition();
 
-                NewtonBodyAddImpulse(newtonBody_, &worldVel[0], &UrhoToNewton(worldPos)[0], physicsWorld_->timeStepTarget_*GetScene()->GetTimeScale());
+                NewtonBodyAddImpulse(newtonBody_, &worldVel[0], &UrhoToNewton(worldPos)[0], physicsWorld_->timeStepAvg_*GetScene()->GetTimeScale());
             
 			
 			}
 			else {
 				NewtonBodySetVelocity(newtonBody_, &UrhoToNewton(worldVelocity)[0]);
-				if (worldVelocity.IsInf() || worldVelocity.IsNaN()) {
-					URHO3D_LOGINFO("setting newton body velocity to nan!");
-				}
+
 			}
         }
         else
@@ -452,8 +444,6 @@ namespace Urho3D {
 
 		CalculateRigidBodyGroupFusedVelocities(childBodies, GetWorldTransform(), linearVelocity, angularVelocity);
 
-		//URHO3D_LOGINFO("angularVelocity: " + angularVelocity.ToString());
-		//URHO3D_LOGINFO("linearVelocity: " + linearVelocity.ToString());
 
 		SetLinearVelocity(linearVelocity, true);
 		SetAngularVelocity(angularVelocity*100.0f);
@@ -700,11 +690,6 @@ namespace Urho3D {
     
 
 
-
-
-
-
-
 	void NewtonRigidBody::calculateSceneDepth()
     {
         sceneDepth_ = 0;
@@ -755,12 +740,12 @@ namespace Urho3D {
         if (!IsEnabledEffective())
             return;
 
-		//URHO3D_LOGINFO("rebuildbody..");
+		URHO3D_LOGINFO("rebuildbody..");
         ea::vector<NewtonCollisionShape*> enabledCollisionShapes;
         updateChildCollisionShapes(enabledCollisionShapes);
 
 
-
+		URHO3D_LOGINFO("child collision shapes: " + ea::to_string(enabledCollisionShapes.size()));
 
 
         ///determine early on if a compound is going to be needed.
@@ -1020,7 +1005,7 @@ namespace Urho3D {
 		NewtonBodySetFullMassMatrix(newtonBody_, mass_, &finalInertia[0][0]);
 
 
-        //URHO3D_LOGINFO("Final Inertia Matrix: " + NewtonToUrhoMat4(finalInertia).ToString() + " Mass: " + ea::to_string(mass_));
+        URHO3D_LOGINFO("Final Inertia Matrix: " + NewtonToUrhoMat4(finalInertia).ToString() + " Mass: " + ea::to_string(mass_));
 
       
 
@@ -1109,27 +1094,7 @@ namespace Urho3D {
         enabledCollisionShapes = filteredList;
     }
 
-    //void RigidBody::updateInterpolatedTransform()
-    //{
-    //    interpolatedNodePos_ += (targetNodePos_ - interpolatedNodePos_)*interpolationFactor_;
-    //    interpolatedNodeRotation_ = interpolatedNodeRotation_.Nlerp(targetNodeRotation_, interpolationFactor_, true);
-    //}
 
-
-    //bool RigidBody::InterpolationWithinRestTolerance()
-    //{
-    //    bool inTolerance = true;
-    //    inTolerance &= ( (targetNodePos_ - interpolatedNodePos_).Length() < M_EPSILON );
-    //    inTolerance &= ( (targetNodeRotation_ - interpolatedNodeRotation_).Angle() < M_EPSILON);
-
-    //    return inTolerance;
-    //}
-
-    //void RigidBody::SnapInterpolation()
-    //{
-    //    interpolatedNodePos_ = targetNodePos_;
-    //    interpolatedNodeRotation_ = targetNodeRotation_;
-    //}
 
     void NewtonRigidBody::OnNodeSet(Node* node)
     {
@@ -1156,12 +1121,7 @@ namespace Urho3D {
                 physicsWorld_->WaitForUpdateFinished();
                 physicsWorld_->removeRigidBody(this);
             }
-            //#todo ?
-            //remove any connected constraints.
-           // for (WeakPtr<NewtonConstraint> constraint : connectedConstraints_) {
-			//	if(!constraint.Expired())
-			//		constraint->Remove();
-            //}
+
 
 
 
@@ -1202,7 +1162,7 @@ namespace Urho3D {
             }
             else
             {
-                URHO3D_LOGINFO("should not happen");
+                URHO3D_LOGWARNING("NewtonRigidBody::HandleNodeRemoved: should not happen");
             }
         }
     }
@@ -1325,10 +1285,7 @@ namespace Urho3D {
     {
         netForce_ += worldForce ; 
 
-		if (netForce_.IsNaN())
-		{
-			URHO3D_LOGINFO("Nan!");
-		}
+
 
 		Vector3 worldTorque = (worldPosition - GetCOMWorldTransform().Translation()).CrossProduct(worldForce);
         AddWorldTorque(worldTorque);
@@ -1337,10 +1294,7 @@ namespace Urho3D {
     void NewtonRigidBody::AddWorldTorque(const Vector3& torque)
     {
         netTorque_ += torque;
-		if (netTorque_.IsNaN())
-		{
-			URHO3D_LOGINFO("Nan!");
-		}
+		
     }
 
     void NewtonRigidBody::AddLocalForce(const Vector3& force)
@@ -1371,7 +1325,7 @@ namespace Urho3D {
         if (newtonBody_) {
             Activate();
             NewtonBodyAddImpulse(newtonBody_, &UrhoToNewton((targetVelocity))[0],
-                &UrhoToNewton(node_->LocalToWorld(localPosition))[0], physicsWorld_->timeStepTarget_);
+                &UrhoToNewton(node_->LocalToWorld(localPosition))[0], physicsWorld_->timeStepAvg_);
         }
         else
         {
@@ -1420,11 +1374,6 @@ namespace Urho3D {
 			dVector dVel;
 			NewtonBodyGetVelocity(newtonBody_, &dVel[0]);
 			vel = (NewtonToUrhoVec3(dVel));
-
-			if (vel.IsInf() || vel.IsNaN())
-			{
-				URHO3D_LOGINFO("NewtonBodyGetVelocity is nan");
-			}
 		}
 		else
 		{
@@ -1540,10 +1489,7 @@ namespace Urho3D {
 			//verify the state has changed back to valid position
 			NewtonBodyGetPosition(newtonBody_, &pos[0]);
 			NewtonBodyGetRotation(newtonBody_, &quat.m_x);
-			URHO3D_LOGINFO(NewtonToUrhoVec3(pos).ToString()); //does indeed print out a valid position
 
-
-			physicsWorld_->SetRemainingSteps(0);
 			return;
 		}
 
@@ -1584,14 +1530,6 @@ namespace Urho3D {
         torque = angularDampingTorque + netTorque_;
 
         
-		if (force.IsInf() || force.IsNaN()) {
-			URHO3D_LOGINFO("GetForceAndTorque is nan");
-			URHO3D_LOGINFO(linearDampingForce.ToString());
-			URHO3D_LOGINFO(velocity.ToString());
-			URHO3D_LOGINFO(ea::to_string(linearDampening_));
-
-
-		}
     }
 
 

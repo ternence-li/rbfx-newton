@@ -245,7 +245,9 @@ namespace Urho3D
         /// number of substeps per scene subsystem update. (1,2,4,8)
         int subSteps_ = 2;
 
-        float timeStepTarget_;
+		float maxTimeStep_ = 1.0f / 60.0f;
+
+		float timeStepAvg_ = 0.0f;
 
         virtual void OnSceneSet(Scene* scene) override;
 

@@ -360,25 +360,6 @@ namespace Urho3D
 
     void Urho3D::NewtonSliderConstraint::buildConstraint()
     {
-		URHO3D_LOGINFO("other worldframe is " + GetOtherBuildWorldFrame().ToString());
-		if (GetOtherBuildWorldFrame().IsNaN() || GetOtherBuildWorldFrame().IsInf()) {
-			URHO3D_LOGINFO("Nan Bug! otherBody->GetWorldTransform():");
-			URHO3D_LOGINFO(otherBody_->GetWorldTransform().ToString());
-			URHO3D_LOGINFO("Nan Bug! Matrix3x4(otherPosition_, otherRotation_, 1.0f):");
-			URHO3D_LOGINFO(Matrix3x4(otherPosition_, otherRotation_, 1.0f).ToString());
-
-		}
-
-		URHO3D_LOGINFO("Building a new Slider Joint:");
-		URHO3D_LOGINFO(("other position: " + otherPosition_.ToString()).c_str());
-		URHO3D_LOGINFO(("other rotation: " + otherRotation_.ToString()).c_str());
-
-		
-		URHO3D_LOGINFO(("own position: " + position_.ToString()).c_str());
-		URHO3D_LOGINFO(("own rotation: " + rotation_.ToString()).c_str());
-
-
-
         newtonJoint_ = new dCustomCorkScrew(UrhoToNewton(GetOwnBuildWorldFrame()), UrhoToNewton(GetOtherBuildWorldFrame()), GetOwnNewtonBodyBuild(), GetOtherNewtonBodyBuild());
     }
 
