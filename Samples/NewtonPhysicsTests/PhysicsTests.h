@@ -136,7 +136,7 @@ private:
     bool drawDebug_ = false;
     void DecomposePhysicsTree();
     void RecomposePhysicsTree();
-    void  TransportNode();
+    void TransportNode();
 
 
 

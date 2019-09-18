@@ -237,7 +237,6 @@ namespace Urho3D {
                 }
                 if (contactEntryPoolCurIdx_ == startingIdx)
                 {
-
                     //grow the pool
                     int prevSize = contactEntryPool_.size();
                     for (int i = 0; i < contactEntryPoolSize_; i++) {
@@ -708,8 +707,6 @@ namespace Urho3D {
                 //if (rigBody->InterpolationWithinRestTolerance())
                 rigBody->MarkInternalTransformDirty(false);
             }
-
-		
         }
 
 
