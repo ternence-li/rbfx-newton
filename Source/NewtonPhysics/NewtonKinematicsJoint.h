@@ -50,7 +50,7 @@ namespace Urho3D {
         void updateFrictions();
 
 
-        void HandlePhysicsPreStep(StringHash event, VariantMap& eventData);
+		void HandleUpdate(StringHash event, VariantMap& eventData);
 
         ///If enabled the constraint will force orientation to the current target orientation.
         bool constrainRotation_ = true;

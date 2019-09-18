@@ -10,7 +10,7 @@
 #include "Urho3D/Core/Context.h"
 
 #include "dCustomKinematicController.h"
-
+#include "Urho3D/Core/CoreEvents.h"
 
 
 
@@ -23,7 +23,7 @@ namespace Urho3D {
 
     NewtonKinematicsControllerConstraint::NewtonKinematicsControllerConstraint(Context* context) : NewtonConstraint(context)
     {
-        SubscribeToEvent(E_NEWTON_PHYSICSPOSTSTEP, URHO3D_HANDLER(NewtonKinematicsControllerConstraint, HandlePhysicsPreStep));
+        SubscribeToEvent(E_UPDATE, URHO3D_HANDLER(NewtonKinematicsControllerConstraint, HandleUpdate));
     }
 
     NewtonKinematicsControllerConstraint::~NewtonKinematicsControllerConstraint()
@@ -127,7 +127,7 @@ namespace Urho3D {
         static_cast<dCustomKinematicController*>(newtonJoint_)->SetMaxAngularFriction(inertia * angularFrictionalAcceleration);
     }
 
-    void NewtonKinematicsControllerConstraint::HandlePhysicsPreStep(StringHash event, VariantMap& eventData)
+    void NewtonKinematicsControllerConstraint::HandleUpdate(StringHash event, VariantMap& eventData)
     {
         updateTarget();
 
