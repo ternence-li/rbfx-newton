@@ -723,12 +723,9 @@ namespace Urho3D {
     {
         URHO3D_PROFILE_FUNCTION();
 
-
         //save existing velocities for restoration after the rebuild
         Vector3 oldLinearVelocity = GetLinearVelocity();
         Vector3 oldAngularVelocity = GetAngularVelocity();
-
-
 
 
         freeBody();

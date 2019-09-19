@@ -77,7 +77,7 @@ namespace Urho3D {
 
     NewtonPhysicsWorld::NewtonPhysicsWorld(Context* context) : Component(context)
     {
-
+		Thread::SetMainThread();
         SubscribeToEvent(E_SCENESUBSYSTEMUPDATE, URHO3D_HANDLER(NewtonPhysicsWorld, HandleSceneUpdate));
 
 
