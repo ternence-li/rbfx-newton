@@ -77,9 +77,11 @@ namespace Urho3D {
 
     NewtonPhysicsWorld::NewtonPhysicsWorld(Context* context) : Component(context)
     {
+#ifdef URHO3D_STATIC
 		Thread::SetMainThread();
-        SubscribeToEvent(E_SCENESUBSYSTEMUPDATE, URHO3D_HANDLER(NewtonPhysicsWorld, HandleSceneUpdate));
+#endif
 
+        SubscribeToEvent(E_SCENESUBSYSTEMUPDATE, URHO3D_HANDLER(NewtonPhysicsWorld, HandleSceneUpdate));
 
         contactEntryPool_.clear();
         for (int i = 0; i < contactEntryPoolSize_; i++)
@@ -605,7 +607,7 @@ namespace Urho3D {
 
  
 
-
+		//URHO3D_LOGINFO("updating");
 
         if (simulationStarted_) {
             URHO3D_PROFILE("Wait For ASync Update To finish.");
