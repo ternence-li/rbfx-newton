@@ -758,7 +758,7 @@ namespace Urho3D {
         }
 
 
-        //rebuild contraints if they need rebuilt (dirty)
+        //rebuild constraints if they need rebuilt (dirty)
         for (NewtonConstraint* constraint : constraintList)
         {
 			if (constraint->GetDirty()) {
