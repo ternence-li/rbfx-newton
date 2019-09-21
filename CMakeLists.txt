@@ -35,7 +35,7 @@ file(GLOB all_SRCS
         "${PROJECT_SOURCE_DIR}/Source/NewtonPhysics/*.cpp"
         )
 
-add_library(rbfx-newton SHARED ${all_SRCS})
+add_library(rbfx-newton ${all_SRCS})
 target_compile_definitions(rbfx-newton PRIVATE URHONEWTON_EXPORTS)
 target_include_directories(rbfx-newton PUBLIC 
 Source/NewtonPhysics
