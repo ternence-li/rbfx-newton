@@ -76,8 +76,8 @@ namespace Urho3D {
         if (limitRotationalVelocity_ != enable)
         {
             limitRotationalVelocity_ = enable;
-            if(newtonJoint_)
-                static_cast<dCustomKinematicController*>(newtonJoint_)->SetLimitRotationVelocity(limitRotationalVelocity_);
+            //if(newtonJoint_)
+            //    static_cast<dCustomKinematicController*>(newtonJoint_)->SetLimitRotationVelocity(limitRotationalVelocity_);
         }
     }
 
@@ -100,7 +100,7 @@ namespace Urho3D {
         newtonJoint_ = new dCustomKinematicController(GetOwnNewtonBodyBuild(), UrhoToNewton(GetOwnBuildWorldFrame()));
         static_cast<dCustomKinematicController*>(newtonJoint_)->SetPickMode(constrainRotation_);//#todo support all pick modes
         updateFrictions();
-        static_cast<dCustomKinematicController*>(newtonJoint_)->SetLimitRotationVelocity(limitRotationalVelocity_);
+        //static_cast<dCustomKinematicController*>(newtonJoint_)->SetLimitRotationVelocity(limitRotationalVelocity_);
     }
 
     void NewtonKinematicsControllerConstraint::updateTarget()
