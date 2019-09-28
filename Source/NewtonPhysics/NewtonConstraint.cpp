@@ -57,6 +57,7 @@ namespace Urho3D {
 
     NewtonConstraint::~NewtonConstraint()
     {
+		URHO3D_LOGINFO("NewtonConstraint Destructor");
     }
 
     void NewtonConstraint::RegisterObject(Context* context)
